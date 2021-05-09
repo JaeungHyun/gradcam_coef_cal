@@ -3,7 +3,7 @@ import numpy as np
 import pickle
 from itertools import combinations
 from itertools import product
-from tqdm.notebook import tqdm
+from tqdm import tqdm
 import ray
 import gc
 
@@ -41,8 +41,8 @@ group5 = ['HLA-A-0205','HLA-A-0206','HLA-A-0217','HLA-A-0216','HLA-A-0212','HLA-
 group6 = ['HLA-A-2601','HLA-A-2501','HLA-A-2608','HLA-A-2603','HLA-A-2602',]
 group7 = ['HLA-A-0103','HLA-A-0101','HLA-A-2902','HLA-A-3002','HLA-A-3601','HLA-A-8001',]
 
-\
-for g in ['group1', 'group2', 'group3', 'group4', 'group5', 'group6', 'group7']:
+
+for g in tqdm(['group1', 'group2', 'group3', 'group4', 'group5', 'group6', 'group7']):
     group1_ungroup = list(set( pd.Series(allele_list)[pd.Series(allele_list).str.contains('HLA-A')])\
                       -set(globals()[f'{g}']))
                      
