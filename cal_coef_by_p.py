@@ -24,7 +24,7 @@ def cal_coef_by_p(binder1, binder2, p):
 ray.init(dashboard_host='0.0.0.0')
 
 
-with open('ms+ba_short_hla_gradcam_result_remove_nan.pkl', 'rb') as f:
+with open('/home/jaeung/Research/MHC/ms+ba_short_hla_gradcam_result_remove_nan.pkl', 'rb') as f:
     p9_binder,p9_nonbinder, p10_binder, p10_nonbinder = pickle.load(f)
 
 
@@ -50,7 +50,7 @@ for g in tqdm(['group1', 'group2', 'group3', 'group4', 'group5', 'group6', 'grou
     for p in range(9):
         results = ray.get([cal_coef_by_p.remote(p9_binder[set1], p9_binder[set2], p) for set1, set2 in df_list])
     
-        with open(f'clustermap_correlation/short_HLA_A_{g}_P{p+1}_outgroup.pkl', 'wb') as f:
+        with open(f'/home/jaeung/Research/MHC/clustermap_correlation/short_HLA_A_{g}_P{p+1}_outgroup.pkl', 'wb') as f:
             pickle.dump(results, f)
         
         del results 
