@@ -9,11 +9,11 @@ import gc
 
 
 @ray.remote
-def cal_coef_by_p(binder1, binder2, p):
-    rvalue = [np.corrcoef(binder1[num_i][:,p].reshape(-1),
-                    binder2[num_j][:,p].reshape(-1))[0,1] \
-              for num_i in range(len(binder1)) \
-              for num_j in range(len(binder2))  ]
+def cal_coef_by_p(binder_id, binder1, binder2, p):
+    rvalue = [np.corrcoef(binder_id[binder1][num_i][:,p].reshape(-1),
+                    binder_id[binder2][num_j][:,p].reshape(-1))[0,1] \
+              for num_i in range(len(binder_id[binder1])) \
+              for num_j in range(len(binder_id[binder2]))  ]
     
     rvalue = np.array(rvalue)
     rvalue = rvalue[~np.isnan(rvalue)]
@@ -25,11 +25,13 @@ ray.init(dashboard_host='0.0.0.0')
 
 
 with open('/home/jaeung/Research/MHC/ms+ba_short_hla_gradcam_result_remove_nan.pkl', 'rb') as f:
-    p9_binder,p9_nonbinder, p10_binder, p10_nonbinder = pickle.load(f)
+    p9_binder, _, _, _ = pickle.load(f)
 
 
 allele_list = list(p9_binder.keys())
 
+
+p9_binder_id = ray.put(p9_binder)
 
 group1 = ['HLA-A-2403', 'HLA-A-2402', 'HLA-A-2413', 'HLA-A-2301', 'HLA-A-2406', 'HLA-A-2407']
 group2 = ['HLA-A-3303', 'HLA-A-3301', 'HLA-A-6801', 'HLA-A-6601', 'HLA-A-3401', 'HLA-A-6602',
@@ -48,7 +50,7 @@ for g in tqdm(['group1', 'group2', 'group3', 'group4', 'group5', 'group6', 'grou
                      
     df_list = list(product(globals()[f'{g}'], group1_ungroup))
     for p in range(9):
-        results = ray.get([cal_coef_by_p.remote(p9_binder[set1], p9_binder[set2], p) for set1, set2 in df_list])
+        results = ray.get([cal_coef_by_p.remote(p9_binder_id, set1, set2, p) for set1, set2 in df_list])
     
         with open(f'/home/jaeung/Research/MHC/clustermap_correlation/short_HLA_A_{g}_P{p+1}_outgroup.pkl', 'wb') as f:
             pickle.dump(results, f)
