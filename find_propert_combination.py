@@ -5,6 +5,7 @@ import gc
 from util import *
 import ray
 from itertools import product
+import sys
 
 
 def check_combi(hla, pep, mode):
@@ -71,42 +72,50 @@ def load_pep_seq():
     return df
 
 
-if __name__ == "main":
-    ray.init(address='auto')
+#if __name__ == "main":
+print(sys.argv[1])
+print(sys.argv[2])
 
-    p9_binder, _, _, _ = load_gradcam_result()
-    df = load_pep_seq()
-    hla = load_short_hla()
+try:
+    ray.init(dashboard_host='0.0.0.0',
+             address='auto'
+             )
+except:
+    ray.init(dashboard_host='0.0.0.0')
 
-    aa_property = pd.read_excel('Amino_acid_property.xlsx')
-    aa_property['hydro'] = aa_property['Hydrophobicity'].map(lambda x: 1 if x >= 0 else 0)
-    aa_property['bulky'] = aa_property['Bulkiness'].map(lambda x: 1 if x >= 15.4 else 0)  # 평균값이 15.367500000000001
 
-    p9_binder_id = ray.put(p9_binder)
+p9_binder, _, _, _ = load_gradcam_result()
+df = load_pep_seq()
+hla = load_short_hla()
 
-    hla_id = ray.put(hla)
-    df_id = ray.put(df)
+aa_property = pd.read_excel('Amino_acid_property.xlsx')
+aa_property['hydro'] = aa_property['Hydrophobicity'].map(lambda x: 1 if x >= 0 else 0)
+aa_property['bulky'] = aa_property['Bulkiness'].map(lambda x: 1 if x >= 15.4 else 0)  # 평균값이 15.367500000000001
 
-    item = [['HLA-A', 'HLA-B', 'HLA-C'], ['bulky', 'hydro'], [0, 1, 2, 3]]
+p9_binder_id = ray.put(p9_binder)
 
-    for allele, mode, target in list(product(*item)):
-        if allele == 'HLA-A':
-            hla_len = 276
-        elif allele == 'HLA-B':
-            hla_len = 252
-        else:
-            hla_len = 268
+hla_id = ray.put(hla)
+df_id = ray.put(df)
 
-        target_list, group_list = call_group_list(allele)
-        total_g = []
-        for g in group_list:
-            total_g.extend(g)
+item = [[sys.argv[1]], [sys.argv[2]], [0, 1, 2, 3]]
 
-        print('Start Ray')
-        result = ray.get([find_property.remote(df_id, total_g, p9_binder_id, hla_id, allele, target, mode)
-                          for allele in total_g])
+for allele, mode, target in list(product(*item)):
+    print(allele, mode, target)
+    if allele == 'HLA-A':
+        hla_len = 276
+    elif allele == 'HLA-B':
+        hla_len = 252
+    else:
+        hla_len = 268
 
-        print('Saving Result')
-        with open(f'/home/jaeung/Research/MHC/{allele}_{mode}_gradcam_result.pkl', 'wb') as f:
-            pickle.dump(result, f)
+    target_list, group_list = call_group_list(allele)
+    total_g = []
+    for g in group_list:
+        total_g.extend(g)
 
+    result = ray.get([find_property.remote(df_id, total_g, p9_binder_id, hla_id, allele, target, mode)
+                      for allele in total_g])
+
+    print('Saving Result')
+    with open(f'/home/jaeung/Research/MHC/{allele}_{mode}_gradcam_result.pkl', 'wb') as f:
+        pickle.dump(result, f)
