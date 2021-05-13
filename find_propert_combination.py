@@ -72,7 +72,7 @@ def load_pep_seq():
 
 
 if __name__ == "main":
-    ray.init(address='auto', _redis_password='5241590000000000')
+    ray.init(address='auto')
 
     p9_binder, _, _, _ = load_gradcam_result()
     df = load_pep_seq()
