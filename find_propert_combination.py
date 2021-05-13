@@ -9,8 +9,14 @@ import ray
 allele = 'HLA-C'
 mode = 'bulky'
 
-ray.init(dashboard_host='0.0.0.0',
-         address='auto')
+if allele == 'HLA-A':
+    hla_len = 276
+elif allele == 'HLA-B':
+    hla_len = 252
+else:
+    hla_len = 268
+
+ray.init(address='auto', _redis_password='5241590000000000')
 
 
 def check_combi(hla, pep, mode):
@@ -28,17 +34,16 @@ def check_combi(hla, pep, mode):
 
 
 @ray.remote
-def find_property(df, p9_binder, hla, allele, target, mode):
-    # print('Case :', case)
+def find_property(df, binder, hla, allele, target, mode):
     result = {}
     result[allele] = []
 
     for num, pepseq in enumerate(df.loc[df['allele'] == allele]['Peptide seq']):
-        new_array = np.zeros((276, 9))
+        new_array = np.zeros((hla_len, 9))
         for h, i in enumerate(hla[allele]):
-            for w, j in enumerate(pepseq):  # anchor position
+            for w, j in enumerate(pepseq):
                 if check_combi(i, j, mode) == target:
-                    new_array[h][w] = p9_binder[allele][num][h][w]
+                    new_array[h][w] = binder[allele][num][h][w]
 
         result[allele].append(new_array)
 
@@ -71,7 +76,7 @@ gc.collect()
 df['length'] = df['Peptide seq'].map(lambda x: len(x))
 df = df[df['length']==9]
 
-target_list, group_list = call_group_list('HLA-A')
+target_list, group_list = call_group_list(allele)
 
 aa_property = pd.read_excel('Amino_acid_property.xlsx')
 aa_property['hydro'] = aa_property['Hydrophobicity'].map(lambda x: 1 if x>=0 else 0)
@@ -87,9 +92,11 @@ p9_binder_id = ray.put(p9_binder)
 df_g_id = ray.put(df_g)
 hla_id = ray.put(hla)
 
+print('Start Ray')
 result = ray.get([find_property.remote(df_g_id, p9_binder_id, hla_id, allele, 0, mode)
                   for allele in df_g['allele'].unique()])
 
+print('Saving Result')
 with open(f'/home/jaeung/Research/MHC/{allele}_{mode}_gradcam_result.pkl', 'wb') as f:
     pickle.dump(result, f)
 
