@@ -7,8 +7,6 @@ import ray
 from itertools import product
 
 
-ray.init(address='auto', _redis_password='5241590000000000')
-
 def check_combi(hla, pep, mode):
     target1 = aa_property[aa_property[mode] == 1]['aa'].tolist()
     target2 = aa_property[aa_property[mode] == 0]['aa'].tolist()
@@ -39,9 +37,11 @@ def find_property(df, target_group, binder, hla, allele, target, mode):
 
     return result
 
+
 def load_gradcam_result():
     with open('/home/jaeung/Research/MHC/ms+ba_short_hla_gradcam_result.pkl', 'rb') as f:
         return pickle.load(f)
+
 
 def load_short_hla():
     hla_b_prot = pd.read_csv('/home/jaeung/Research/MHC/HLA_B_prot.txt', sep='\t', header = None)
@@ -67,11 +67,13 @@ def load_pep_seq():
     gc.collect()
 
     df['length'] = df['Peptide seq'].map(lambda x: len(x))
-    df = df[df['length']==9]
+    df = df[df['length'] == 9]
     return df
 
 
 if __name__ == "main":
+    ray.init(address='auto', _redis_password='5241590000000000')
+
     p9_binder, _, _, _ = load_gradcam_result()
     df = load_pep_seq()
     hla = load_short_hla()
