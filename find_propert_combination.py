@@ -4,20 +4,10 @@ import numpy as np
 import gc
 from util import *
 import ray
+from itertools import product
 
-
-allele = 'HLA-C'
-mode = 'bulky'
-
-if allele == 'HLA-A':
-    hla_len = 276
-elif allele == 'HLA-B':
-    hla_len = 252
-else:
-    hla_len = 268
 
 ray.init(address='auto', _redis_password='5241590000000000')
-
 
 def check_combi(hla, pep, mode):
     target1 = aa_property[aa_property[mode] == 1]['aa'].tolist()
@@ -34,10 +24,10 @@ def check_combi(hla, pep, mode):
 
 
 @ray.remote
-def find_property(df, binder, hla, allele, target, mode):
+def find_property(df, target_group, binder, hla, allele, target, mode):
     result = {}
     result[allele] = []
-
+    df = df[df['allele'].isin(target_group)]
     for num, pepseq in enumerate(df.loc[df['allele'] == allele]['Peptide seq']):
         new_array = np.zeros((hla_len, 9))
         for h, i in enumerate(hla[allele]):
@@ -49,54 +39,72 @@ def find_property(df, binder, hla, allele, target, mode):
 
     return result
 
+def load_gradcam_result():
+    with open('/home/jaeung/Research/MHC/ms+ba_short_hla_gradcam_result.pkl', 'rb') as f:
+        return pickle.load(f)
 
-with open('/home/jaeung/Research/MHC/ms+ba_short_hla_gradcam_result.pkl', 'rb') as f:
-    p9_binder,_, _, _ = pickle.load(f)
+def load_short_hla():
+    hla_b_prot = pd.read_csv('/home/jaeung/Research/MHC/HLA_B_prot.txt', sep='\t', header = None)
+    hla_a_prot = pd.read_csv('/home/jaeung/Research/MHC/HLA_A_prot.txt', sep='\t', header = None)
+    hla_c_prot = pd.read_csv('/home/jaeung/Research/MHC/HLA_C_prot.txt', sep='\t', header = None)
+
+    hla_a_prot[1] = hla_a_prot[1].map(lambda x: x[24:-65])
+    hla_c_prot[1] = hla_c_prot[1].map(lambda x: x[4:-66])
+    hla_b_prot[1] = hla_b_prot[1].map(lambda x: x[12:-62])
+    hla_prot = pd.concat([hla_a_prot, hla_b_prot, hla_c_prot], axis = 0)
+
+    hla = {}
+    for line in hla_prot.to_numpy():
+        hla[line[0]] = line[1]
+    return hla
 
 
-hla_b_prot = pd.read_csv('/home/jaeung/Research/MHC/HLA_B_prot.txt', sep='\t', header = None)
-hla_a_prot = pd.read_csv('/home/jaeung/Research/MHC/HLA_A_prot.txt', sep='\t', header = None)
-hla_c_prot = pd.read_csv('/home/jaeung/Research/MHC/HLA_C_prot.txt', sep='\t', header = None)
+def load_pep_seq():
+    with open('/home/jaeung/Research/MHC/Short_HLA_seq_training_data.pkl', 'rb') as f:
+        df = pickle.load(f)
 
-hla_a_prot[1] = hla_a_prot[1].map(lambda x: x[24:-65])
-hla_c_prot[1] = hla_c_prot[1].map(lambda x: x[4:-66])
-hla_b_prot[1] = hla_b_prot[1].map(lambda x: x[12:-62])
-hla_prot = pd.concat([hla_a_prot, hla_b_prot, hla_c_prot], axis = 0)
+    del df['matrix'], df['sequence']
+    gc.collect()
 
-hla = {}
-for line in hla_prot.to_numpy():
-    hla[line[0]] = line[1]
+    df['length'] = df['Peptide seq'].map(lambda x: len(x))
+    df = df[df['length']==9]
+    return df
 
-with open('/home/jaeung/Research/MHC/Short_HLA_seq_training_data.pkl', 'rb') as f:
-    df = pickle.load(f)
 
-del df['matrix'], df['sequence']
-gc.collect()
+if __name__ == "main":
+    p9_binder, _, _, _ = load_gradcam_result()
+    df = load_pep_seq()
+    hla = load_short_hla()
 
-df['length'] = df['Peptide seq'].map(lambda x: len(x))
-df = df[df['length']==9]
+    aa_property = pd.read_excel('Amino_acid_property.xlsx')
+    aa_property['hydro'] = aa_property['Hydrophobicity'].map(lambda x: 1 if x >= 0 else 0)
+    aa_property['bulky'] = aa_property['Bulkiness'].map(lambda x: 1 if x >= 15.4 else 0)  # 평균값이 15.367500000000001
 
-target_list, group_list = call_group_list(allele)
+    p9_binder_id = ray.put(p9_binder)
 
-aa_property = pd.read_excel('Amino_acid_property.xlsx')
-aa_property['hydro'] = aa_property['Hydrophobicity'].map(lambda x: 1 if x>=0 else 0)
-aa_property['bulky'] = aa_property['Bulkiness'].map(lambda x: 1 if x>= 15.4 else 0) # 평균값이 15.367500000000001
+    hla_id = ray.put(hla)
+    df_id = ray.put(df)
 
-total_g = []
-for g in group_list:
-    total_g.extend(g)
+    item = [['HLA-A', 'HLA-B', 'HLA-C'], ['bulky', 'hydro'], [0, 1, 2, 3]]
 
-df_g = df[df['allele'].isin(total_g)]
+    for allele, mode, target in list(product(*item)):
+        if allele == 'HLA-A':
+            hla_len = 276
+        elif allele == 'HLA-B':
+            hla_len = 252
+        else:
+            hla_len = 268
 
-p9_binder_id = ray.put(p9_binder)
-df_g_id = ray.put(df_g)
-hla_id = ray.put(hla)
+        target_list, group_list = call_group_list(allele)
+        total_g = []
+        for g in group_list:
+            total_g.extend(g)
 
-print('Start Ray')
-result = ray.get([find_property.remote(df_g_id, p9_binder_id, hla_id, allele, 0, mode)
-                  for allele in df_g['allele'].unique()])
+        print('Start Ray')
+        result = ray.get([find_property.remote(df_id, total_g, p9_binder_id, hla_id, allele, target, mode)
+                          for allele in total_g])
 
-print('Saving Result')
-with open(f'/home/jaeung/Research/MHC/{allele}_{mode}_gradcam_result.pkl', 'wb') as f:
-    pickle.dump(result, f)
+        print('Saving Result')
+        with open(f'/home/jaeung/Research/MHC/{allele}_{mode}_gradcam_result.pkl', 'wb') as f:
+            pickle.dump(result, f)
 
