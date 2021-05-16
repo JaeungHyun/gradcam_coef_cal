@@ -37,19 +37,16 @@ try:
 except:
     ray.init(dashboard_host='0.0.0.0')
 
-target_list, group_list = call_group_list(allele)
+target_list, _ = call_group_list(allele)
 
-
-for g in tqdm(target_list):
-    for target in range(4):
-        p9_binder, _, _, _ = load_target_gradcam_result(allele, mode, target)
-        p9_binder_id = ray.put(p9_binder)
-        allele_list = list(p9_binder.keys())
-        group_list = list(combinations(globals()[f'{g}'], 2))
-
+for target in range(4):
+    p9_binder, _, _, _ = load_target_gradcam_result(allele, mode, target)
+    p9_binder_id = ray.put(p9_binder)
+    allele_list = list(p9_binder.keys())
+    group_list = list(combinations(globals()[f'{g}'], 2))
+    for g in tqdm(target_list):
         for p in range(9):
             results = ray.get([cal_coef_by_p.remote(p9_binder_id, set1, set2, p) for set1, set2 in group_list])
-
             with open(f'/home/jaeung/Research/MHC/clustermap_correlation/short_{allele}_{mode}_{target}_{g}_P{p+1}_ingroup.pkl', 'wb') as f:
                 pickle.dump(results, f)
 
