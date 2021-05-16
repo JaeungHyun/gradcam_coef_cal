@@ -91,9 +91,10 @@ def load_gradcam_result():
         return pickle.load(f)
 
 
-#def load_gradcam_result(mode1, mode2):
-#    if mode1 == 'total':
-#        with open('/home/jaeung/Research/MHC/ms+ba_short_hla_gradcam_result.pkl', 'rb') as f:
-#            return pickle.load(f)
-#    elif mode1 == 'hydro':
-#z        with open(f'/home/jaeung/Research/MHC/{allele}_{mode}_gradcam_result.pkl')
+def load_target_gradcam_result(allele, mode, target):
+    if mode == 'total':
+        with open('/home/jaeung/Research/MHC/ms+ba_short_hla_gradcam_result.pkl', 'rb') as f:
+            return pickle.load(f)
+    elif mode == 'hydro':
+        with open(f'/home/jaeung/Research/MHC/{allele}_{mode}_{target}_gradcam_result.pkl') as f:
+            return pickle.load(f)

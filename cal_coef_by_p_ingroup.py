@@ -27,6 +27,8 @@ def cal_coef_by_p(binder_id, binder1, binder2, p):
 '''
 allele = sys.argv[1]
 mode = sys.argv[2]  # total, [hydro, bulky, 0,1,2,3] 나누기, 2021.05.16 현재 hydro, bulky 0~3만 계산하면됨
+group_mode = sys.argv[3]  # ingroup or outgroup
+
 
 try:
     ray.init(dashboard_host='0.0.0.0',
@@ -35,19 +37,21 @@ try:
 except:
     ray.init(dashboard_host='0.0.0.0')
 
-p9_binder, _, _, _ = load_gradcam_result()
-allele_list = list(p9_binder.keys())
 target_list, group_list = call_group_list(allele)
-p9_binder_id = ray.put(p9_binder)
 
 
 for g in tqdm(target_list):
-    group_list = list(combinations(globals()[f'{g}'], 2))
-    for p in range(9):
-        results = ray.get([cal_coef_by_p.remote(p9_binder_id, set1, set2, p) for set1, set2 in group_list])
+    for target in range(4):
+        p9_binder, _, _, _ = load_target_gradcam_result(allele, mode, target)
+        p9_binder_id = ray.put(p9_binder)
+        allele_list = list(p9_binder.keys())
+        group_list = list(combinations(globals()[f'{g}'], 2))
 
-        with open(f'/home/jaeung/Research/MHC/clustermap_correlation/short_HLA_A_{g}_P{p+1}_ingroup.pkl', 'wb') as f:
-            pickle.dump(results, f)
+        for p in range(9):
+            results = ray.get([cal_coef_by_p.remote(p9_binder_id, set1, set2, p) for set1, set2 in group_list])
 
-        del results 
-        gc.collect()
+            with open(f'/home/jaeung/Research/MHC/clustermap_correlation/short_{allele}_{mode}_{target}_{g}_P{p+1}_ingroup.pkl', 'wb') as f:
+                pickle.dump(results, f)
+
+            del results
+            gc.collect()
