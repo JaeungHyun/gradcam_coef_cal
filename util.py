@@ -87,7 +87,7 @@ def load_pep_seq():
 
 
 def load_gradcam_result():
-    with open('/home/jaeung/Research/MHC/ms+ba_short_hla_gradcam_result.pkl', 'rb') as f:
+    with open('/home/jaeung/Research/MHC/ms+ba_short_hla_gradcam_result_remove_nan.pkl', 'rb') as f:
         return pickle.load(f)
 
 
