@@ -39,39 +39,6 @@ def find_property(df, target_group, binder, hla, allele, target, mode):
     return result
 
 
-def load_gradcam_result():
-    with open('/home/jaeung/Research/MHC/ms+ba_short_hla_gradcam_result.pkl', 'rb') as f:
-        return pickle.load(f)
-
-
-def load_short_hla():
-    hla_b_prot = pd.read_csv('/home/jaeung/Research/MHC/HLA_B_prot.txt', sep='\t', header = None)
-    hla_a_prot = pd.read_csv('/home/jaeung/Research/MHC/HLA_A_prot.txt', sep='\t', header = None)
-    hla_c_prot = pd.read_csv('/home/jaeung/Research/MHC/HLA_C_prot.txt', sep='\t', header = None)
-
-    hla_a_prot[1] = hla_a_prot[1].map(lambda x: x[24:-65])
-    hla_c_prot[1] = hla_c_prot[1].map(lambda x: x[4:-66])
-    hla_b_prot[1] = hla_b_prot[1].map(lambda x: x[12:-62])
-    hla_prot = pd.concat([hla_a_prot, hla_b_prot, hla_c_prot], axis = 0)
-
-    hla = {}
-    for line in hla_prot.to_numpy():
-        hla[line[0]] = line[1]
-    return hla
-
-
-def load_pep_seq():
-    with open('/home/jaeung/Research/MHC/Short_HLA_seq_training_data.pkl', 'rb') as f:
-        df = pickle.load(f)
-
-    del df['matrix'], df['sequence']
-    gc.collect()
-
-    df['length'] = df['Peptide seq'].map(lambda x: len(x))
-    df = df[df['length'] == 9]
-    return df
-
-
 #if __name__ == "main":
 print(sys.argv[1])
 print(sys.argv[2])
@@ -117,5 +84,5 @@ for allele, mode, target in list(product(*item)):
                       for allele in total_g])
 
     print('Saving Result')
-    with open(f'/home/jaeung/Research/MHC/{allele}_{mode}_gradcam_result.pkl', 'wb') as f:
+    with open(f'/home/jaeung/Research/MHC/{allele}_{mode}_{target}_gradcam_result.pkl', 'wb') as f:
         pickle.dump(result, f)
