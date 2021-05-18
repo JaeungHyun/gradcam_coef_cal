@@ -37,7 +37,7 @@ try:
 except:
     ray.init(dashboard_host='0.0.0.0')
 
-target_list, _ = call_group_list(allele)
+target_list, target_group_list = call_group_list(allele)
 
 for target in range(4):
     p9_binder = load_target_gradcam_result(allele, mode, target)
@@ -50,14 +50,15 @@ for target in range(4):
 
     p9_binder_id = ray.put(p9_binder)
     allele_list = list(p9_binder.keys())
-    if group_mode == 'ingroup':
-        group_list = list(combinations(globals()[f'{g}'], 2))
-    elif group_mode == 'outgroup':
-        group1_ungroup = list(set(pd.Series(allele_list)[pd.Series(allele_list).str.contains(f'{allele}')]) \
-                              - set(globals()[f'{g}']))
-        group_list = list(product(globals()[f'{g}'], group1_ungroup))
 
-    for g in tqdm(target_list):
+    for i, g in tqdm(enumerate(target_list)):
+        if group_mode == 'ingroup':
+            group_list = list(combinations(target_group_list[i], 2))
+
+        elif group_mode == 'outgroup':
+            outgroup = pd.Series(allele_list)[pd.Series(allele_list).str.contains(f'{allele}')] - target_group_list[i]
+            group_list = list(product(target_group_list[i], outgroup))
+
         for p in range(9):
             results = ray.get([cal_coef_by_p.remote(p9_binder_id, set1, set2, p) for set1, set2 in group_list])
             with open(f'/home/jaeung/Research/MHC/clustermap_correlation/short_{allele}_{mode}_{target}_{g}_P{p+1}_{group_mode}.pkl', 'wb') as f:
