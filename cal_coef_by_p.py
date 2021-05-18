@@ -40,7 +40,14 @@ except:
 target_list, _ = call_group_list(allele)
 
 for target in range(4):
-    p9_binder, _, _, _ = load_target_gradcam_result(allele, mode, target)
+    p9_binder = load_target_gradcam_result(allele, mode, target)
+    if mode != 'total':
+        result = {}
+        for dic in p9_binder:
+            for key, value in dic.items():
+                result[key] = value
+    p9_binder = result
+
     p9_binder_id = ray.put(p9_binder)
     allele_list = list(p9_binder.keys())
     if group_mode == 'ingroup':
