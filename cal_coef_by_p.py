@@ -56,10 +56,12 @@ for target in range(4):
             group_list = list(combinations(target_group_list[i], 2))
 
         elif group_mode == 'outgroup':
-            outgroup = pd.Series(allele_list)[pd.Series(allele_list).str.contains(f'{allele}')] - target_group_list[i]
+            outgroup = tuple(set(pd.Series(allele_list)[pd.Series(allele_list).str.contains(f'{allele}')])
+                             - set(target_group_list[i]))
             group_list = list(product(target_group_list[i], outgroup))
 
         for p in range(9):
+            print(allele, mode, target, g, f'P{p+1}')
             results = ray.get([cal_coef_by_p.remote(p9_binder_id, set1, set2, p) for set1, set2 in group_list])
             with open(f'/home/jaeung/Research/MHC/clustermap_correlation/short_{allele}_{mode}_{target}_{g}_P{p+1}_{group_mode}.pkl', 'wb') as f:
                 pickle.dump(results, f)
