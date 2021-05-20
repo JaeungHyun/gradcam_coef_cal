@@ -39,32 +39,56 @@ except:
 
 target_list, target_group_list = call_group_list(allele)
 
-for target in range(4):
-    p9_binder = load_target_gradcam_result(allele, mode, target)
-    if mode != 'total':
+
+if mode != 'total':
+    for target in range(4):
+        p9_binder = load_target_gradcam_result(allele, mode, target)
+
         result = {}
         for dic in p9_binder:
             for key, value in dic.items():
                 result[key] = value
-    p9_binder = result
 
-    p9_binder_id = ray.put(p9_binder)
+        p9_binder_id = ray.put(result)
+        allele_list = list(p9_binder.keys())
+        del p9_binder
+
+        for i, g in tqdm(enumerate(target_list)):
+            group_list = return_group_list(group_mode, target_group_list, allele_list, allele, i)
+
+            for p in range(9):
+                print(allele, mode, target, g, f'P{p+1}')
+                results = ray.get([cal_coef_by_p.remote(p9_binder_id, set1, set2, p) for set1, set2 in group_list])
+                with open(f'/home/jaeung/Research/MHC/clustermap_correlation/short_{allele}_{mode}_{target}_{g}_P{p+1}_{group_mode}.pkl', 'wb') as f:
+                    pickle.dump(results, f)
+
+                del results
+                gc.collect()
+        del p9_binder_id
+
+else:
+    p9_binder = load_target_gradcam_result(allele, mode)
+
+    result = {}
+    for dic in p9_binder:
+        for key, value in dic.items():
+            result[key] = value
+
+    p9_binder_id = ray.put(result)
     allele_list = list(p9_binder.keys())
-
+    del p9_binder
     for i, g in tqdm(enumerate(target_list)):
-        if group_mode == 'ingroup':
-            group_list = list(combinations(target_group_list[i], 2))
-
-        elif group_mode == 'outgroup':
-            outgroup = tuple(set(pd.Series(allele_list)[pd.Series(allele_list).str.contains(f'{allele}')])
-                             - set(target_group_list[i]))
-            group_list = list(product(target_group_list[i], outgroup))
+        group_list = return_group_list(group_mode, target_group_list, allele_list, allele, i)
 
         for p in range(9):
-            print(allele, mode, target, g, f'P{p+1}')
+            print(allele, mode, g, f'P{p + 1}')
             results = ray.get([cal_coef_by_p.remote(p9_binder_id, set1, set2, p) for set1, set2 in group_list])
-            with open(f'/home/jaeung/Research/MHC/clustermap_correlation/short_{allele}_{mode}_{target}_{g}_P{p+1}_{group_mode}.pkl', 'wb') as f:
+            with open(
+                f'/home/jaeung/Research/MHC/clustermap_correlation/short_{allele}_{mode}__{g}_P{p + 1}_{group_mode}.pkl',
+                    'wb') as f:
                 pickle.dump(results, f)
 
             del results
             gc.collect()
+    del p9_binder_id
+

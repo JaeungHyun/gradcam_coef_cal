@@ -1,6 +1,7 @@
 import pickle
 import gc
 import pandas as pd
+from itertools import combinations, product
 
 
 def call_group_list(allele):
@@ -91,12 +92,24 @@ def load_gradcam_result():
         return pickle.load(f)
 
 
-def load_target_gradcam_result(allele, mode, target):
+def load_target_gradcam_result(allele, mode, target=0):
     if mode == 'total':
         with open('/home/jaeung/Research/MHC/ms+ba_short_hla_gradcam_result.pkl', 'rb') as f:
             p9_binder, _, _, _  = pickle.load(f)
         return p9_binder
 
     else:
-        with open(f'/home/jaeung/Research/MHC/{allele}_{mode}_{target}_gradcam_result.pkl') as f:
+        with open(f'/home/jaeung/Research/MHC/{allele}_{mode}_{target}_gradcam_result.pkl', 'rb') as f:
             return pickle.load(f)
+
+
+def return_group_list(group_mode, target_group_list, allele_list, allele, i):
+    if group_mode == 'ingroup':
+        group_list = list(combinations(target_group_list[i], 2))
+
+    elif group_mode == 'outgroup':
+        outgroup = tuple(set(pd.Series(allele_list)[pd.Series(allele_list).str.contains(f'{allele}')])
+                             - set(target_group_list[i]))
+        group_list = list(product(target_group_list[i], outgroup))
+
+    return group_list

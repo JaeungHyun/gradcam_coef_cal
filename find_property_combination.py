@@ -1,7 +1,4 @@
-import pandas as pd
-import pickle
 import numpy as np
-import gc
 from util import *
 import ray
 from itertools import product
@@ -43,6 +40,7 @@ def find_property(df, target_group, binder, hla, allele, target, mode):
 print(sys.argv[1])
 print(sys.argv[2])
 
+
 try:
     ray.init(dashboard_host='0.0.0.0',
              address='auto'
@@ -50,19 +48,23 @@ try:
 except:
     ray.init(dashboard_host='0.0.0.0')
 
+if sys.argv[3]:
+    p9_binder, _, _, _ = load_gradcam_result()
+    p9_binder_id = ray.put(p9_binder)
+    df = load_pep_seq()
+    hla = load_short_hla()
+    hla_id = ray.put(hla)
+    df_id = ray.put(df)
+    with open('current_binder_id.pkl', 'wb') as f:
+        pickle.dump((p9_binder_id, hla_id, df_id), f)
+else:
+    with open('current_binder_id.pkl', 'rb') as f:
+        p9_binder_id, hla_id, df_id = pickle.load(f)
 
-p9_binder, _, _, _ = load_gradcam_result()
-df = load_pep_seq()
-hla = load_short_hla()
 
 aa_property = pd.read_excel('Amino_acid_property.xlsx')
 aa_property['hydro'] = aa_property['Hydrophobicity'].map(lambda x: 1 if x >= 0 else 0)
 aa_property['bulky'] = aa_property['Bulkiness'].map(lambda x: 1 if x >= 15.4 else 0)  # 평균값이 15.367500000000001
-
-p9_binder_id = ray.put(p9_binder)
-
-hla_id = ray.put(hla)
-df_id = ray.put(df)
 
 item = [[sys.argv[1]], [sys.argv[2]], [0, 1, 2, 3]]
 
