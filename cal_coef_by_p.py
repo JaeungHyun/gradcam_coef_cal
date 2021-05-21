@@ -25,14 +25,15 @@ def cal_coef_by_p(binder_id, binder1, binder2, p):
 allele = sys.argv[1]
 mode = sys.argv[2]  # total, [hydro, bulky, 0,1,2,3] 나누기, 2021.05.16 현재 hydro, bulky 0~3만 계산하면됨
 group_mode = sys.argv[3]  # ingroup or outgroup
+initial = sys.argv[4]
 
 
 try:
     ray.init(dashboard_host='0.0.0.0',
-             address='auto'
-             )
+             address='auto',
+             log_to_driver=False)
 except:
-    ray.init(dashboard_host='0.0.0.0')
+    ray.init(dashboard_host='0.0.0.0', log_to_driver=False)
 
 target_list, target_group_list = call_group_list(allele)
 
@@ -70,10 +71,16 @@ else:
     # for dic in p9_binder:
     #     for key, value in dic.items():
     #         result[key] = value
+    if initial == '1':
+        p9_binder_id = ray.put(p9_binder)
+        allele_list = list(p9_binder.keys())
+        del p9_binder
+        with open('binder_id.pkl', 'wb') as f:
+            pickle.dump((p9_binder_id, allele_list), f)
+    else:
+        with open('binder_id.pkl', 'rb') as f:
+            p9_binder_id, allele_list = pickle.load(f)
 
-    p9_binder_id = ray.put(p9_binder)
-    allele_list = list(p9_binder.keys())
-    del p9_binder
     for i, g in tqdm(enumerate(target_list)):
         group_list = return_group_list(group_mode, target_group_list, allele_list, allele, i)
 
@@ -81,7 +88,7 @@ else:
             print(allele, mode, g, f'P{p + 1}')
             results = ray.get([cal_coef_by_p.remote(p9_binder_id, set1, set2, p) for set1, set2 in group_list])
             with open(
-                f'/home/jaeung/Research/MHC/clustermap_correlation/short_{allele}_{mode}__{g}_P{p + 1}_{group_mode}.pkl',
+                f'/home/jaeung/Research/MHC/clustermap_correlation/short_{allele}_{mode}__{g}_P{p+1}_{group_mode}.pkl',
                     'wb') as f:
                 pickle.dump(results, f)
 

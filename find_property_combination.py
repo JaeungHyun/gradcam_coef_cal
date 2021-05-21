@@ -36,17 +36,17 @@ def find_property(df, target_group, binder, hla, allele, target, mode):
     return result
 
 
-#if __name__ == "main":
+# if __name__ == "main":
 print(sys.argv[1])
 print(sys.argv[2])
 
 
 try:
     ray.init(dashboard_host='0.0.0.0',
-             address='auto'
+             address='auto', log_to_driver=False
              )
 except:
-    ray.init(dashboard_host='0.0.0.0')
+    ray.init(dashboard_host='0.0.0.0', log_to_driver=False)
 
 if sys.argv[3]:
     p9_binder, _, _, _ = load_gradcam_result()
@@ -55,6 +55,8 @@ if sys.argv[3]:
     hla = load_short_hla()
     hla_id = ray.put(hla)
     df_id = ray.put(df)
+    del p9_binder, df, hla
+
     with open('current_binder_id.pkl', 'wb') as f:
         pickle.dump((p9_binder_id, hla_id, df_id), f)
 else:
