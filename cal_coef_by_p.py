@@ -50,7 +50,7 @@ if mode != 'total':
                 result[key] = value
 
         p9_binder_id = ray.put(result)
-        allele_list = list(p9_binder.keys())
+        allele_list = list(result.keys())
         del p9_binder
 
         for i, g in tqdm(enumerate(target_list)):
@@ -69,12 +69,12 @@ if mode != 'total':
 else:
     p9_binder = load_target_gradcam_result(allele, mode)
 
-    result = {}
-    for dic in p9_binder:
-        for key, value in dic.items():
-            result[key] = value
+    # result = {}
+    # for dic in p9_binder:
+    #     for key, value in dic.items():
+    #         result[key] = value
 
-    p9_binder_id = ray.put(result)
+    p9_binder_id = ray.put(p9_binder)
     allele_list = list(p9_binder.keys())
     del p9_binder
     for i, g in tqdm(enumerate(target_list)):
