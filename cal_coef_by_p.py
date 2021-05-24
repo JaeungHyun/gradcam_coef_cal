@@ -72,13 +72,15 @@ else:
     #     for key, value in dic.items():
     #         result[key] = value
     if initial == '1':
+        print('importing binder data')
         p9_binder_id = ray.put(p9_binder)
         allele_list = list(p9_binder.keys())
         del p9_binder
-        with open('binder_id.pkl', 'wb') as f:
+        with open('total_binder_id.pkl', 'wb') as f:
             pickle.dump((p9_binder_id, allele_list), f)
     else:
-        with open('binder_id.pkl', 'rb') as f:
+        print('Use exist data')
+        with open('total_binder_id.pkl', 'rb') as f:
             p9_binder_id, allele_list = pickle.load(f)
 
     for i, g in tqdm(enumerate(target_list)):

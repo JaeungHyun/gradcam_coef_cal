@@ -105,11 +105,11 @@ def load_target_gradcam_result(allele, mode, target=0):
 
 def return_group_list(group_mode, target_group_list, allele_list, allele, i):
     if group_mode == 'ingroup':
-        group_list = list(combinations(target_group_list[i], 2))
+        group_list = tuple(combinations(target_group_list[i], 2))
 
     elif group_mode == 'outgroup':
         outgroup = tuple(set(pd.Series(allele_list)[pd.Series(allele_list).str.contains(f'{allele}')])
-                             - set(target_group_list[i]))
-        group_list = list(product(target_group_list[i], outgroup))
+                         - set(target_group_list[i]))
+        group_list = tuple(product(target_group_list[i], outgroup))
 
     return group_list
