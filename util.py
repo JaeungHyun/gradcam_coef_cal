@@ -2,6 +2,7 @@ import pickle
 import gc
 import pandas as pd
 from itertools import combinations, product
+import platform
 
 
 def call_group_list(allele):
@@ -29,7 +30,7 @@ def call_group_list(allele):
                   'HLA-B-2707', 'HLA-B-2706',]
         group7 = ['HLA-B-3905', 'HLA-B-3901', 'HLA-B-3801', 'HLA-B-3802', 'HLA-B-1509', 'HLA-B-1510',]
         group8 = ['HLA-B-3924', 'HLA-B-1402', 'HLA-B-1403',]
-        group9 = ['HLA-B-2709','HLA-B-3909',]
+        group9 = ['HLA-B-2709', 'HLA-B-3909',]
         group10 = ['HLA-B-4901', 'HLA-B-5001', 'HLA-B-4006', 'HLA-B-4101', 'HLA-B-4501',]
         group11 = ['HLA-B-1803', 'HLA-B-1801', 'HLA-B-4402', 'HLA-B-4403', 'HLA-B-4427', 'HLA-B-4428',]
         group12 = ['HLA-B-4102', 'HLA-B-4104', 'HLA-B-4103', 'HLA-B-4409', 'HLA-B-4002', 'HLA-B-4001',]
@@ -67,7 +68,7 @@ def load_short_hla():
     hla_a_prot[1] = hla_a_prot[1].map(lambda x: x[24:-65])
     hla_c_prot[1] = hla_c_prot[1].map(lambda x: x[4:-66])
     hla_b_prot[1] = hla_b_prot[1].map(lambda x: x[12:-62])
-    hla_prot = pd.concat([hla_a_prot, hla_b_prot, hla_c_prot], axis = 0)
+    hla_prot = pd.concat([hla_a_prot, hla_b_prot, hla_c_prot], axis=0)
 
     hla = {}
     for line in hla_prot.to_numpy():
@@ -94,13 +95,21 @@ def load_gradcam_result():
 
 def load_target_gradcam_result(allele, mode, target=0):
     if mode == 'total':
-        with open('/home/jaeung/Research/MHC/ms+ba_short_hla_gradcam_result.pkl', 'rb') as f:
-            p9_binder, _, _, _  = pickle.load(f)
+        if platform.system() == "Darwin":
+            with open('/Users/jaeung/gradcam_coef_cal/data/ms+ba_short_hla_gradcam_result.pkl', 'rb') as f:
+                p9_binder, _, _, _  = pickle.load(f)
+        else:
+            with open('/home/jaeung/Research/MHC/ms+ba_short_hla_gradcam_result.pkl', 'rb') as f:
+                p9_binder, _, _, _  = pickle.load(f)
         return p9_binder
 
     else:
-        with open(f'/home/jaeung/Research/MHC/{allele}_{mode}_{target}_gradcam_result.pkl', 'rb') as f:
-            return pickle.load(f)
+        if platform.system() == "Darwin":
+            with open(f'/Users/jaeung/gradcam_coef_cal/data/{allele}_{mode}_{target}_gradcam_result.pkl', 'rb') as f:
+                return pickle.load(f)
+        else:
+            with open(f'/home/jaeung/Research/MHC/{allele}_{mode}_{target}_gradcam_result.pkl', 'rb') as f:
+                return pickle.load(f)
 
 
 def return_group_list(group_mode, target_group_list, allele_list, allele, i):
