@@ -2,6 +2,7 @@ import pickle
 import gc
 import pandas as pd
 from itertools import combinations, product
+import platform
 
 
 def call_group_list(allele):
@@ -91,16 +92,23 @@ def load_gradcam_result():
     with open('/home/jaeung/Research/MHC/ms+ba_short_hla_gradcam_result_remove_nan.pkl', 'rb') as f:
         return pickle.load(f)
 
-
 def load_target_gradcam_result(allele, mode, target=0):
-    if mode == 'total' or mode == 'pattern':
-        with open('/home/jaeung/Research/MHC/ms+ba_short_hla_gradcam_result.pkl', 'rb') as f:
-            p9_binder, _, _, _  = pickle.load(f)
+    if mode == 'total':
+        if platform.system() == "Darwin":
+            with open('/Users/jaeung/gradcam_coef_cal/data/ms+ba_short_hla_gradcam_result.pkl', 'rb') as f:
+                p9_binder, _, _, _ = pickle.load(f)
+        else:
+            with open('/home/jaeung/Research/MHC/ms+ba_short_hla_gradcam_result.pkl', 'rb') as f:
+                p9_binder, _, _, _ = pickle.load(f)
         return p9_binder
 
     else:
-        with open(f'/home/jaeung/Research/MHC/{allele}_{mode}_{target}_gradcam_result.pkl', 'rb') as f:
-            return pickle.load(f)
+        if platform.system() == "Darwin":
+            with open(f'/Users/jaeung/gradcam_coef_cal/data/{allele}_{mode}_{target}_gradcam_result.pkl', 'rb') as f:
+                return pickle.load(f)
+        else:
+            with open(f'/home/jaeung/Research/MHC/{allele}_{mode}_{target}_gradcam_result.pkl', 'rb') as f:
+                return pickle.load(f)
 
 
 def return_group_list(group_mode, target_group_list, allele_list, allele, i):
