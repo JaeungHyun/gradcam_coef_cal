@@ -3,7 +3,6 @@ from tqdm import tqdm
 import ray
 import sys
 from util import *
-import platform
 
 
 @ray.remote
@@ -15,7 +14,18 @@ def cal_coef_by_p(binder_id, binder1, binder2, p):
     
     rvalue = np.array(rvalue)
     rvalue = rvalue[~np.isnan(rvalue)]
+    return rvalue
 
+
+@ray.remote
+def cal_coef_by_matrix(binder_id, binder1, binder2):
+    rvalue = [np.corrcoef(binder_id[binder1][num_i].reshape(-1),
+                          binder_id[binder2][num_j].reshape(-1))[0, 1] \
+              for num_i in range(len(binder_id[binder1])) \
+              for num_j in range(len(binder_id[binder2]))]
+
+    rvalue = np.array(rvalue)
+    rvalue = rvalue[~np.isnan(rvalue)]
     return rvalue
 
 '''
@@ -30,17 +40,17 @@ initial = sys.argv[4]
 
 
 try:
-    ray.init(address='auto',
+    ray.init(dashboard_host='0.0.0.0',
+             address='auto',
              log_to_driver=False)
 except:
-    ray.init(dashboard_host='0.0.0.0',
-             log_to_driver=False)
+    ray.init(dashboard_host='0.0.0.0', log_to_driver=False)
 
 target_list, target_group_list = call_group_list(allele)
 
 
-if mode != 'total':
-    for target in range(2):
+if mode == 'hydro' or mode == "bulky":
+    for target in range(4):
         p9_binder = load_target_gradcam_result(allele, mode, target)
 
         result = {}
@@ -58,21 +68,40 @@ if mode != 'total':
             for p in range(9):
                 print(allele, mode, target, g, f'P{p+1}')
                 results = ray.get([cal_coef_by_p.remote(p9_binder_id, set1, set2, p) for set1, set2 in group_list])
-                if platform.system() == "Darwin":
-                    with open(f'/Users/jaeung/gradcam_coef_cal/data/short_{allele}_{mode}_{target}_{g}_P{p+1}_{group_mode}.pkl', 'wb') as f:
-                        pickle.dump(results, f)
-                else:
-                    with open(f'/home/jaeung/Research/MHC/clustermap_correlation/short_{allele}_{mode}_{target}_{g}_P{p+1}_{group_mode}.pkl', 'wb') as f:
-                        pickle.dump(results, f)
+                with open(f'/home/jaeung/Research/MHC/clustermap_correlation/short_{allele}_{mode}_{target}_{g}_P{p+1}_{group_mode}.pkl', 'wb') as f:
+                    pickle.dump(results, f)
 
                 del results
                 gc.collect()
         del p9_binder_id
 
+elif mode == "pattern":
+    p9_binder = load_target_gradcam_result(allele, mode)
+
+    p9_binder_id = ray.put(p9_binder)
+    allele_list = list(p9_binder.keys())
+    del p9_binder
+
+    for i, g in tqdm(enumerate(target_list)):
+        group_list = return_group_list(group_mode, target_group_list, allele_list, allele, i)
+        print(allele, mode, g)
+        results = ray.get([cal_coef_by_matrix.remote(p9_binder_id, set1, set2) for set1, set2 in group_list])
+        with open(f'/home/jaeung/Research/MHC/clustermap_correlation/short_{allele}_{mode}_{g}_{group_mode}.pkl', 'wb') as f:
+            pickle.dump(results, f)
+
+        del results
+        gc.collect()
+        del p9_binder_id
+
 else:
+    p9_binder = load_target_gradcam_result(allele, mode)
+
+    # result = {}
+    # for dic in p9_binder:
+    #     for key, value in dic.items():
+    #         result[key] = value
     if initial == '1':
         print('importing binder data')
-        p9_binder = load_target_gradcam_result(allele, mode)
         p9_binder_id = ray.put(p9_binder)
         allele_list = list(p9_binder.keys())
         del p9_binder
@@ -83,46 +112,18 @@ else:
         with open('total_binder_id.pkl', 'rb') as f:
             p9_binder_id, allele_list = pickle.load(f)
 
-    for i, g in tqdm(enumerate(target_list[:1])):
-        #print(g)
+    for i, g in tqdm(enumerate(target_list)):
         group_list = return_group_list(group_mode, target_group_list, allele_list, allele, i)
-        #print(group_list)
-        for p in range(8,9):
-            print(allele, mode, g, f'P{p + 1}')
-            results = ray.get([cal_coef_by_p.remote(p9_binder_id, set1, set2, p) for set1, set2 in group_list])
-            if platform.system() == "Darwin":
-                with open(
-                    f'/Users/jaeung/gradcam_coef_cal/data/short_{allele}_{mode}__{g}_P{p+1}_{group_mode}.pkl'
-                        'wb') as f:
-                    pickle.dump(results, f)
-            else:
-                with open(
-                    f'/home/jaeung/Research/MHC/clustermap_correlation/short_{allele}_{mode}__{g}_P{p+1}_{group_mode}.pkl',
-                        'wb') as f:
-                    pickle.dump(results, f)
-
-            del results
-            gc.collect()
-
-    for i, g in tqdm(enumerate(target_list[1:])):
-        print(g)
-        group_list = return_group_list(group_mode, target_group_list, allele_list, allele, i+1)
 
         for p in range(9):
             print(allele, mode, g, f'P{p + 1}')
             results = ray.get([cal_coef_by_p.remote(p9_binder_id, set1, set2, p) for set1, set2 in group_list])
-            if platform.system() == "Darwin":
-                with open(
-                    f'/Users/jaeung/gradcam_coef_cal/data/short_{allele}_{mode}__{g}_P{p+1}_{group_mode}.pkl'
-                        'wb') as f:
-                    pickle.dump(results, f)
-            else:
-                with open(
-                    f'/home/jaeung/Research/MHC/clustermap_correlation/short_{allele}_{mode}__{g}_P{p+1}_{group_mode}.pkl',
-                        'wb') as f:
-                    pickle.dump(results, f)
+            with open(
+                f'/home/jaeung/Research/MHC/clustermap_correlation/short_{allele}_{mode}__{g}_P{p+1}_{group_mode}.pkl',
+                    'wb') as f:
+                pickle.dump(results, f)
 
             del results
             gc.collect()
-
     del p9_binder_id
+
