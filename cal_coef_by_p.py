@@ -38,11 +38,14 @@ mode = sys.argv[2]  # total, [hydro, bulky, 0,1,2,3] 나누기, 2021.05.16 현�
 group_mode = sys.argv[3]  # ingroup or outgroup
 initial = sys.argv[4]
 
+object_store_memory = int(0.6 * ray.utils.get_system_memory() // 10 ** 9 * 10 ** 9)
 
 try:
     ray.init(dashboard_host='0.0.0.0',
              address='auto',
-             log_to_driver=False)
+             log_to_driver=False,
+             _plasma_directory="/tmp",
+             object_store_memory=object_store_memory)
 except:
     ray.init(dashboard_host='0.0.0.0', log_to_driver=False)
 
@@ -76,22 +79,29 @@ if mode == 'hydro' or mode == "bulky":
         del p9_binder_id
 
 elif mode == "pattern":
-    p9_binder = load_target_gradcam_result(allele, mode)
+    if initial == '1':
+        p9_binder = load_target_gradcam_result(allele, mode)
+        print('importing binder data')
+        p9_binder_id = ray.put(p9_binder)
+        allele_list = list(p9_binder.keys())
+        del p9_binder
+        with open('total_binder_id.pkl', 'wb') as f:
+            pickle.dump((p9_binder_id, allele_list), f)
+    else:
+        print('Use exist data')
+        with open('total_binder_id.pkl', 'rb') as f:
+            p9_binder_id, allele_list = pickle.load(f)
 
-    p9_binder_id = ray.put(p9_binder)
-    allele_list = list(p9_binder.keys())
-    del p9_binder
-
-    for i, g in tqdm(enumerate(target_list)):
+    for i, g in tqdm(enumerate(target_list[1:])):
         group_list = return_group_list(group_mode, target_group_list, allele_list, allele, i)
         print(allele, mode, g)
         results = ray.get([cal_coef_by_matrix.remote(p9_binder_id, set1, set2) for set1, set2 in group_list])
-        with open(f'/home/jaeung/Research/MHC/clustermap_correlation/short_{allele}_{mode}_{g}_{group_mode}.pkl', 'wb') as f:
+        with open(f'short_{allele}_{mode}_{g}_{group_mode}.pkl', 'wb') as f:
             pickle.dump(results, f)
 
         del results
         gc.collect()
-        del p9_binder_id
+        #del p9_binder_id
 
 else:
     p9_binder = load_target_gradcam_result(allele, mode)

@@ -64,7 +64,7 @@ aa_property['bulky'] = aa_property['Bulkiness'].map(lambda x: 1 if x >= 15.4 els
 
 item = [[sys.argv[1]], [sys.argv[2]], [0, 1]]
 
-for allele, mode, targeㅌt in list(product(*item)):
+for allele, mode, target in list(product(*item)):
     print(allele, mode, target)
     if allele == 'HLA-A':
         hla_len = 276
