@@ -8,9 +8,9 @@ from util import *
 @ray.remote
 def cal_coef_by_p(binder_id, binder1, binder2, p):
     rvalue = [np.corrcoef(binder_id[binder1][num_i][:,p].reshape(-1),
-                          binder_id[binder2][num_j][:,p].reshape(-1))[0,1] \
-              for num_i in range(len(binder_id[binder1])) \
-              for num_j in range(len(binder_id[binder2]))  ]
+                          binder_id[binder2][num_j][:,p].reshape(-1))[0, 1]\
+              for num_i in range(len(binder_id[binder1]))\
+              for num_j in range(len(binder_id[binder2]))]
     
     rvalue = np.array(rvalue)
     rvalue = rvalue[~np.isnan(rvalue)]
@@ -20,8 +20,8 @@ def cal_coef_by_p(binder_id, binder1, binder2, p):
 @ray.remote
 def cal_coef_by_matrix(binder_id, binder1, binder2):
     rvalue = [np.corrcoef(binder_id[binder1][num_i].reshape(-1),
-                          binder_id[binder2][num_j].reshape(-1))[0, 1] \
-              for num_i in range(len(binder_id[binder1])) \
+                          binder_id[binder2][num_j].reshape(-1))[0, 1]\
+              for num_i in range(len(binder_id[binder1]))\
               for num_j in range(len(binder_id[binder2]))]
 
     rvalue = np.array(rvalue)
@@ -101,15 +101,10 @@ elif mode == "pattern":
 
         del results
         gc.collect()
-        #del p9_binder_id
 
 else:
     p9_binder = load_target_gradcam_result(allele, mode)
 
-    # result = {}
-    # for dic in p9_binder:
-    #     for key, value in dic.items():
-    #         result[key] = value
     if initial == '1':
         print('importing binder data')
         p9_binder_id = ray.put(p9_binder)
