@@ -100,8 +100,8 @@ def load_target_gradcam_result(allele, mode, target=0):
             with open('/Users/jaeung/gradcam_coef_cal/data/ms+ba_short_hla_gradcam_result.pkl', 'rb') as f:
                 p9_binder, _, _, _ = pickle.load(f)
         else:
-            with open('/home/jaeung/Research/MHC/ms+ba_short_hla_9mer_gradcam_result.pkl', 'rb') as f:
-                p9_binder, _, _, _ = pickle.load(f)
+            with open('/home/jaeung/Research/MHC/ms+ba_short_hla_c_9mer_gradcam_result.pkl', 'rb') as f:
+                p9_binder = pickle.load(f)
         return p9_binder
 
     else:
