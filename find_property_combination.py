@@ -36,14 +36,19 @@ def find_property(df, target_group, binder, allele, target, mode):
 print(sys.argv[1])
 print(sys.argv[2])
 
-
+object_store_memory = int(0.6 * ray.utils.get_system_memory() // 10 ** 9 * 10 ** 9)
 try:
-    ray.init(address='auto', log_to_driver=False)
+    ray.init(address='auto')
 except:
-    ray.init(dashboard_host='0.0.0.0', log_to_driver=False)
+    ray.init(dashboard_host='0.0.0.0',
+             log_to_driver=False,
+             _plasma_directory="/tmp",
+             object_store_memory=object_store_memory
+             )
+
 
 if sys.argv[3]:
-    p9_binder, _, _, _ = load_gradcam_result()
+    p9_binder = load_gradcam_result()
     p9_binder_id = ray.put(p9_binder)
     df = load_pep_seq()
     hla = load_short_hla()
@@ -60,7 +65,7 @@ else:
 
 aa_property = pd.read_excel('Amino_acid_property.xlsx')
 aa_property['hydro'] = aa_property['Hydrophobicity'].map(lambda x: 1 if x >= 0 else 0)
-aa_property['bulky'] = aa_property['Bulkiness'].map(lambda x: 1 if x >= 15.4 else 0)  # 평균값이 15.367500000000001
+aa_property['bulky'] = aa_property['Bulkiness'].map(lambda x: 1 if x >= np.median(aa_property['Bulkiness']) else 0)  # 평균값이 15.367500000000001
 
 item = [[sys.argv[1]], [sys.argv[2]], [0, 1]]
 
