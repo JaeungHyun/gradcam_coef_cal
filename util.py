@@ -90,8 +90,12 @@ def load_pep_seq():
 
 
 def load_gradcam_result():
-    with open('/home/jaeung/Research/MHC/ms+ba_short_hla_9mer_gradcam_result.pkl', 'rb') as f:
-        return pickle.load(f)
+    if platform.system() == "Darwin":
+        with open('new_short_hla_9mer_gradcam_result.pkl', 'rb') as f:
+            return pickle.load(f)
+    else:
+        with open('/home/jaeung/Research/MHC/new_short_hla_9mer_gradcam_result.pkl', 'rb') as f:
+            return pickle.load(f)
 
 
 def load_target_gradcam_result(allele, mode, target=0):
