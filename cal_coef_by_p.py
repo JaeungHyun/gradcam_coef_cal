@@ -42,7 +42,7 @@ object_store_memory = int(0.6 * ray.utils.get_system_memory() // 10 ** 9 * 10 **
 
 
 try:
-    ray.init(address='auto')
+    ray.init(address='auto', log_to_driver=False)
 except:
     ray.init(dashboard_host='0.0.0.0',
              log_to_driver=False,
