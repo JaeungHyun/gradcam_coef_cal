@@ -94,7 +94,7 @@ def load_gradcam_result():
         with open('new_short_hla_9mer_gradcam_result.pkl', 'rb') as f:
             return pickle.load(f)
     else:
-        with open('new_short_hla_9mer_gradcam_result.pkl', 'rb') as f:
+        with open('/home/jaeung/Research/MHC/new_short_hla_9mer_gradcam_result.pkl', 'rb') as f:
             return pickle.load(f)
 
 

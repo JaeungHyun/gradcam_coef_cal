@@ -47,20 +47,13 @@ except:
              )
 
 
-if sys.argv[3]:
-    p9_binder = load_gradcam_result()
-    p9_binder_id = ray.put(p9_binder)
-    df = load_pep_seq()
-    hla = load_short_hla()
-    hla_id = ray.put(hla)
-    df_id = ray.put(df)
-    del p9_binder, df, hla
-
-    with open('current_binder_id.pkl', 'wb') as f:
-        pickle.dump((p9_binder_id, hla_id, df_id), f)
-else:
-    with open('current_binder_id.pkl', 'rb') as f:
-        p9_binder_id, hla_id, df_id = pickle.load(f)
+p9_binder = load_gradcam_result()
+p9_binder_id = ray.put(p9_binder)
+df = load_pep_seq()
+hla = load_short_hla()
+hla_id = ray.put(hla)
+df_id = ray.put(df)
+del p9_binder, df, hla
 
 
 aa_property = pd.read_excel('Amino_acid_property.xlsx')
