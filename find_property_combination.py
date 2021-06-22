@@ -15,6 +15,18 @@ def check_combi(pep, mode):
         return 1
 
 
+def find_property_value(mode, aa):
+    #print(mode)
+    if mode == 'hydro':
+        prop = 'Hydrophobicity'
+    elif mode == 'bulky':
+        prop = 'Bulkiness'
+    elif mode == 'polar':
+        prop = 'Polarity'
+
+    return aa_property.loc[aa_property['aa'] == aa.upper()][prop].values[0]
+
+
 @ray.remote
 def find_property(df, target_group, binder, allele, target, mode, p):
     result = {}
@@ -31,6 +43,21 @@ def find_property(df, target_group, binder, allele, target, mode, p):
         #result[allele].append(new_array)
 
     return result
+
+
+@ray.remote
+def find_property2(df, target_group, binder, allele, target, mode, p):
+    cp_value = {}
+    cor_result = {}
+    cor_result[allele] = []
+    cp_value[allele] = []
+    df = df[df['allele'].isin(target_group)]  # HLA-A,B,C 각각 가져오는 부분
+    for num, pepseq in enumerate(df.loc[df['allele'] == allele]['Peptide seq']):
+        if check_combi(pepseq[p], mode) == target:
+            cor_result[allele].append(binder[allele][num][:, p])
+            cp_value[allele].append(find_property_value(mode, pepseq[p]))
+
+    return cp_value, cor_result
 
 
 # if __name__ == "main":
@@ -62,7 +89,7 @@ aa_property['hydro'] = aa_property['Hydrophobicity'].map(lambda x: 1 if x >= 0 e
 aa_property['bulky'] = aa_property['Bulkiness'].map(lambda x: 1 if x >= np.median(aa_property['Bulkiness']) else 0)
 aa_property['polar'] = aa_property['Polarity'].map(lambda x: 1 if x >= np.median(aa_property['Polarity']) else 0)
 
-item = [[sys.argv[1]], [sys.argv[2]], [0, 1]]
+item = [[sys.argv[1]], [sys.argv[2]], [1]]
 
 for allele, mode, target in list(product(*item)):
     print(allele, mode, target)
@@ -78,9 +105,19 @@ for allele, mode, target in list(product(*item)):
     for g in group_list:
         total_g.extend(g)
     for p in range(9):
-        result = ray.get([find_property.remote(df_id, total_g, p9_binder_id, allele, target, mode, p)
-                          for allele in total_g])
+        if sys.argv[3] == '0':
+            result = ray.get([find_property.remote(df_id, total_g, p9_binder_id, allele, target, mode, p)
+                              for allele in total_g])
 
-        print('Saving Result')
-        with open(f'/home/jaeung/Research/MHC/{allele}_{mode}_{target}_position_{p+1}_gradcam_result.pkl', 'wb') as f:
-            pickle.dump(result, f)
+            print('Saving Result')
+            with open(f'/home/jaeung/Research/MHC/{allele}_{mode}_{target}_position_{p+1}_gradcam_result.pkl',
+                      'wb') as f:
+                pickle.dump(result, f)
+        else:
+            result = ray.get([find_property2.remote(df_id, total_g, p9_binder_id, allele, target, mode, p)
+                              for allele in total_g])
+
+            print('Saving Result')
+            with open(f'/home/jaeung/Research/MHC/{allele}_{mode}_{target}_position_{p+1}_gradcam_result_with_cp_value.pkl',
+                      'wb') as f:
+                pickle.dump(result, f)

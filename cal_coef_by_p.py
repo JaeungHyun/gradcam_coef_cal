@@ -28,6 +28,25 @@ def cal_coef_by_matrix(binder_id, binder1, binder2):
     rvalue = rvalue[~np.isnan(rvalue)]
     return rvalue
 
+
+@ray.remote
+def cal_coef_by_p_with_cp_value(cp_id, binder_id, allele1, allele2):
+    sum_cp = [cp_id[allele1][num_i] + cp_id[allele2][num_j]
+              for num_i in range(len(cp_id[allele1])) \
+              for num_j in range(len(cp_id[allele2]))]
+    mul_cp = [cp_id[allele1][num_i] * cp_id[allele2][num_j]
+              for num_i in range(len(cp_id[allele1])) \
+              for num_j in range(len(cp_id[allele2]))]
+    rvalue = [np.corrcoef(binder_id[allele1][num_i].reshape(-1),
+                          binder_id[allele2][num_j].reshape(-1))[0, 1] \
+              for num_i in range(len(binder_id[allele1])) \
+              for num_j in range(len(binder_id[allele2]))]
+    sum_cp = np.array(sum_cp)
+    mul_cp = np.array(mul_cp)
+    rvalue = np.array(rvalue)
+
+    return sum_cp, mul_cp, rvalue
+
 '''
     Ray를 터미널에서 실행하고 스크립트 실행할시 
     address='auto'로 하면 자동으로 이미 생성되어있는 곳에 들어감
@@ -97,6 +116,23 @@ elif mode == "pattern":
         print(allele, mode, g)
         results = ray.get([cal_coef_by_matrix.remote(p9_binder_id, set1, set2) for set1, set2 in group_list])
         with open(f'short_{allele}_{mode}_{g}_{group_mode}.pkl', 'wb') as f:
+            pickle.dump(results, f)
+
+        del results
+        gc.collect()
+
+elif sys.argv[4] == "cp":
+    print('importing binder data')
+    cp_value, p9_binder = load_target_gradcam_result(allele, mode)
+    cp_value_id = ray.put(cp_value)
+    p9_binder_id = ray.put(p9_binder)
+    allele_list = list(p9_binder.keys())
+
+    for i, g in tqdm(enumerate(target_list)):
+        group_list = return_group_list(group_mode, target_group_list, allele_list, allele, i)
+        print(allele, mode, g)
+        results = ray.get([cal_coef_by_matrix.remote(cp_value_id, p9_binder_id, set1, set2) for set1, set2 in group_list])
+        with open(f'/home/jaeung/Research/MHC/clustermap_correlation/short_{allele}_{mode}_{g}_{group_mode}_with_cp_value.pkl', 'wb') as f:
             pickle.dump(results, f)
 
         del results

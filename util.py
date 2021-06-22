@@ -109,6 +109,10 @@ def load_target_gradcam_result(allele, mode, target=0, position=0):
                 p9_binder = pickle.load(f)
         return p9_binder
 
+    elif mode == 'cp':
+        with open(f'/home/jaeung/Research/MHC/{allele}_{mode}_{target}_position_{position+1}_gradcam_result_with_cp_value.pkl', 'rb') as f:
+            return pickle.load(f)
+
     else:
         if platform.system() == "Darwin":
             with open(f'/Users/jaeung/gradcam_coef_cal/data/{allele}_{mode}_{target}_position_{position+1}_gradcam_result.pkl', 'rb') as f:
