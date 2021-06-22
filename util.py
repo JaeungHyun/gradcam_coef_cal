@@ -99,8 +99,8 @@ def load_gradcam_result():
             return pickle.load(f)
 
 
-def load_target_gradcam_result(allele, mode, target=0, position=0):
-    if mode == 'total' or mode == 'pattern':
+def load_target_gradcam_result(allele, mode, target=0, position=0, cp='cp'):
+    if cp != 'cp' and (mode == 'total' or mode == 'pattern'):
         if platform.system() == "Darwin":
             with open('/Users/jaeung/gradcam_coef_cal/data/new_short_hla_9mer_gradcam_result.pkl', 'rb') as f:
                 p9_binder, _, _, _ = pickle.load(f)
@@ -109,17 +109,17 @@ def load_target_gradcam_result(allele, mode, target=0, position=0):
                 p9_binder = pickle.load(f)
         return p9_binder
 
-    elif mode == 'cp':
-        with open(f'/home/jaeung/Research/MHC/{allele}_{mode}_{target}_position_{position+1}_gradcam_result_with_cp_value.pkl', 'rb') as f:
-            return pickle.load(f)
-
     else:
         if platform.system() == "Darwin":
             with open(f'/Users/jaeung/gradcam_coef_cal/data/{allele}_{mode}_{target}_position_{position+1}_gradcam_result.pkl', 'rb') as f:
                 return pickle.load(f)
         else:
-            with open(f'/home/jaeung/Research/MHC/{allele}_{mode}_{target}_position_{position+1}_gradcam_result.pkl', 'rb') as f:
-                return pickle.load(f)
+            if cp=='cp':
+                with open(f'/home/jaeung/Research/MHC/{allele}_{mode}_{target}_position_{position+1}_gradcam_result_with_cp_value.pkl', 'rb') as f:
+                    return pickle.load(f)
+            else:
+                with open(f'/home/jaeung/Research/MHC/{allele}_{mode}_{target}_position_{position+1}_gradcam_result.pkl', 'rb') as f:
+                    return pickle.load(f)
 
 
 def return_group_list(group_mode, target_group_list, allele_list, allele, i):
