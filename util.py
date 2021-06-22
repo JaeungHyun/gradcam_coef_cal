@@ -24,28 +24,29 @@ def call_group_list(allele):
         group1 = ['HLA-B-5301', 'HLA-B-3501', 'HLA-B-3507', 'HLA-B-3508', 'HLA-B-1511']
         group2 = ['HLA-B-0704', 'HLA-B-0702', 'HLA-B-4201', 'HLA-B-3502', 'HLA-B-3503','HLA-B-3504','HLA-B-3506',]
         group3 = ['HLA-B-8101', 'HLA-B-4202',]
-        group4 = ['HLA-B-5401','HLA-B-5501', 'HLA-B-5502','HLA-B-5601']
-        group5 = ['HLA-B-5101', 'HLA-B-5108', 'HLA-B-7301', 'HLA-B-3906',]
-        group6 = ['HLA-B-2710', 'HLA-B-2702', 'HLA-B-2701', 'HLA-B-2704', 'HLA-B-2703', 'HLA-B-2705', 'HLA-B-2708',
+        group4 = ['HLA-B-5401','HLA-B-5501',]
+        group5 = [ 'HLA-B-5502','HLA-B-5601']
+        group6 = ['HLA-B-5101', 'HLA-B-5108', 'HLA-B-7301', 'HLA-B-3906',]
+        group7 = ['HLA-B-2710', 'HLA-B-2702', 'HLA-B-2701', 'HLA-B-2704', 'HLA-B-2703', 'HLA-B-2705', 'HLA-B-2708',
                   'HLA-B-2707', 'HLA-B-2706',]
-        group7 = ['HLA-B-3905', 'HLA-B-3901', 'HLA-B-3801', 'HLA-B-3802', 'HLA-B-1509', 'HLA-B-1510',]
-        group8 = ['HLA-B-3924', 'HLA-B-1402', 'HLA-B-1403',]
-        group9 = ['HLA-B-2709','HLA-B-3909',]
-        group10 = ['HLA-B-4901', 'HLA-B-5001', 'HLA-B-4006', 'HLA-B-4101', 'HLA-B-4501',]
-        group11 = ['HLA-B-1803', 'HLA-B-1801', 'HLA-B-4402', 'HLA-B-4403', 'HLA-B-4427', 'HLA-B-4428',]
-        group12 = ['HLA-B-4102', 'HLA-B-4104', 'HLA-B-4103', 'HLA-B-4409', 'HLA-B-4002', 'HLA-B-4001',]
-        group13 = ['HLA-B-1508','HLA-B-1501','HLA-B-1503','HLA-B-1502','HLA-B-4601',]
-        group14 = ['HLA-B-5703','HLA-B-5701','HLA-B-5801', 'HLA-B-5802','HLA-B-1517',]
-        group15 = ['HLA-B-5201', 'HLA-B-1302', ]
-        group16 = ['HLA-B-0803', 'HLA-B-0802',]
+        group8 = ['HLA-B-3905', 'HLA-B-3901', 'HLA-B-3801', 'HLA-B-3802', 'HLA-B-1509', 'HLA-B-1510',]
+        group9 = ['HLA-B-3924', 'HLA-B-1402', 'HLA-B-1403',]
+        group10 = ['HLA-B-2709','HLA-B-3909',]
+        group11 = ['HLA-B-4901', 'HLA-B-5001', 'HLA-B-4006', 'HLA-B-4101', 'HLA-B-4501',]
+        group12 = ['HLA-B-1803', 'HLA-B-1801', 'HLA-B-4402', 'HLA-B-4403', 'HLA-B-4427', 'HLA-B-4428',]
+        group13 = ['HLA-B-4102', 'HLA-B-4104', 'HLA-B-4103', 'HLA-B-4409', 'HLA-B-4002', 'HLA-B-4001',]
+        group14 = ['HLA-B-1508','HLA-B-1501','HLA-B-1503','HLA-B-1502','HLA-B-4601',]
+        group15 = ['HLA-B-5703','HLA-B-5701','HLA-B-5801', 'HLA-B-5802','HLA-B-1517',]
+        group16 = ['HLA-B-5201', 'HLA-B-1302', ]
+        group17 = ['HLA-B-0803', 'HLA-B-0802',]
 
         target_list = ['group1', 'group2', 'group3', 'group4', 'group5',
                        'group6', 'group7', 'group8', 'group9', 'group10',
                        'group11', 'group12', 'group13', 'group14', 'group15',
-                       'group16']
+                       'group16', 'group17']
 
         group_list = [group1, group2, group3, group4, group5, group6, group7, group8, group9, group10, group11,
-                      group12, group13, group14, group15, group16]
+                      group12, group13, group14, group15, group16, group17]
 
     else:
         group1 = ['HLA-C-0401', 'HLA-C-0501', 'HLA-C-0403', 'HLA-C-0802', ]
@@ -98,7 +99,7 @@ def load_gradcam_result():
             return pickle.load(f)
 
 
-def load_target_gradcam_result(allele, mode, target=0):
+def load_target_gradcam_result(allele, mode, target=0, position=0):
     if mode == 'total' or mode == 'pattern':
         if platform.system() == "Darwin":
             with open('/Users/jaeung/gradcam_coef_cal/data/new_short_hla_9mer_gradcam_result.pkl', 'rb') as f:
@@ -110,10 +111,10 @@ def load_target_gradcam_result(allele, mode, target=0):
 
     else:
         if platform.system() == "Darwin":
-            with open(f'/Users/jaeung/gradcam_coef_cal/data/{allele}_{mode}_{target}_gradcam_result.pkl', 'rb') as f:
+            with open(f'/Users/jaeung/gradcam_coef_cal/data/{allele}_{mode}_{target}_position_{position+1}_gradcam_result.pkl', 'rb') as f:
                 return pickle.load(f)
         else:
-            with open(f'/home/jaeung/Research/MHC/{allele}_{mode}_{target}_gradcam_result.pkl', 'rb') as f:
+            with open(f'/home/jaeung/Research/MHC/{allele}_{mode}_{target}_position_{position+1}_gradcam_result.pkl', 'rb') as f:
                 return pickle.load(f)
 
 

@@ -16,18 +16,19 @@ def check_combi(pep, mode):
 
 
 @ray.remote
-def find_property(df, target_group, binder, allele, target, mode):
+def find_property(df, target_group, binder, allele, target, mode, p):
     result = {}
     result[allele] = []
-    df = df[df['allele'].isin(target_group)]
+    df = df[df['allele'].isin(target_group)] # HLA-A,B,C 각각 가져오는 부분
     for num, pepseq in enumerate(df.loc[df['allele'] == allele]['Peptide seq']):
-        new_array = np.zeros((hla_len, 9))
+        #new_array = np.zeros((hla_len, 9))
         #for h, i in enumerate(hla[allele]):
-        for w, j in enumerate(pepseq):
-            if check_combi(j, mode) == target:
-                new_array[:, w] = binder[allele][num][:, w]
+        #for w, j in enumerate(pepseq):
+        if check_combi(pepseq[p], mode) == target:
+            result[allele].append(binder[allele][num][:, p])
+            #new_array[:, w] = binder[allele][num][:, w]
 
-        result[allele].append(new_array)
+        #result[allele].append(new_array)
 
     return result
 
@@ -58,7 +59,8 @@ del p9_binder, df, hla
 
 aa_property = pd.read_excel('Amino_acid_property.xlsx')
 aa_property['hydro'] = aa_property['Hydrophobicity'].map(lambda x: 1 if x >= 0 else 0)
-aa_property['bulky'] = aa_property['Bulkiness'].map(lambda x: 1 if x >= np.median(aa_property['Bulkiness']) else 0)  # 평균값이 15.367500000000001
+aa_property['bulky'] = aa_property['Bulkiness'].map(lambda x: 1 if x >= np.median(aa_property['Bulkiness']) else 0)
+aa_property['polar'] = aa_property['Polarity'].map(lambda x: 1 if x >= np.median(aa_property['Polarity']) else 0)
 
 item = [[sys.argv[1]], [sys.argv[2]], [0, 1]]
 
@@ -75,10 +77,10 @@ for allele, mode, target in list(product(*item)):
     total_g = []
     for g in group_list:
         total_g.extend(g)
+    for p in range(9):
+        result = ray.get([find_property.remote(df_id, total_g, p9_binder_id, allele, target, mode, p)
+                          for allele in total_g])
 
-    result = ray.get([find_property.remote(df_id, total_g, p9_binder_id, allele, target, mode)
-                      for allele in total_g])
-
-    print('Saving Result')
-    with open(f'/home/jaeung/Research/MHC/{allele}_{mode}_{target}_gradcam_result.pkl', 'wb') as f:
-        pickle.dump(result, f)
+        print('Saving Result')
+        with open(f'/home/jaeung/Research/MHC/{allele}_{mode}_{target}_position_{p+1}_gradcam_result.pkl', 'wb') as f:
+            pickle.dump(result, f)
