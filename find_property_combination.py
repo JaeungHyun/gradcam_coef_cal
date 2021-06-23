@@ -15,16 +15,8 @@ def check_combi(pep, mode):
         return 1
 
 
-def find_property_value(mode, aa):
-    #print(mode)
-    if mode == 'hydro':
-        prop = 'Hydrophobicity'
-    elif mode == 'bulky':
-        prop = 'Bulkiness'
-    elif mode == 'polar':
-        prop = 'Polarity'
-
-    return aa_property.loc[aa_property['aa'] == aa.upper()][prop].values[0]
+def find_property_value(aa):
+    return aa_property.loc[aa_property['aa'] == aa.upper()].values[0][2:5]
 
 
 @ray.remote
@@ -45,6 +37,16 @@ def find_property(df, target_group, binder, allele, target, mode, p):
     return result
 
 
+def check_combi(pep, mode):
+    target1 = aa_property[aa_property[mode] == 1]['aa'].tolist()
+    target2 = aa_property[aa_property[mode] == 0]['aa'].tolist()
+
+    if pep in target1:
+        return 0
+    elif pep in target2:
+        return 1
+
+
 @ray.remote
 def find_property2(df, target_group, binder, allele, target, mode, p):
     cp_value = {}
@@ -55,7 +57,7 @@ def find_property2(df, target_group, binder, allele, target, mode, p):
     for num, pepseq in enumerate(df.loc[df['allele'] == allele]['Peptide seq']):
         if check_combi(pepseq[p], mode) == target:
             cor_result[allele].append(binder[allele][num][:, p])
-            cp_value[allele].append(find_property_value(mode, pepseq[p]))
+            cp_value[allele].append(find_property_value(pepseq[p]))
 
     return cp_value, cor_result
 
