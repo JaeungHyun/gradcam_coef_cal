@@ -89,7 +89,7 @@ aa_property['hydro'] = aa_property['Hydrophobicity'].map(lambda x: 1 if x >= 0 e
 aa_property['bulky'] = aa_property['Bulkiness'].map(lambda x: 1 if x >= np.median(aa_property['Bulkiness']) else 0)
 aa_property['polar'] = aa_property['Polarity'].map(lambda x: 1 if x >= np.median(aa_property['Polarity']) else 0)
 
-item = [[sys.argv[1]], [sys.argv[2]], [1]]
+item = [[sys.argv[1]], [sys.argv[2]], [0, 1]]
 
 for allele, mode, target in list(product(*item)):
     print(allele, mode, target)

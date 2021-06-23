@@ -74,34 +74,35 @@ if sys.argv[4] == "cp":
     for p in range(9):
         for target in range(2):
             print('importing binder data')
-            cp_value, p9_binder = load_target_gradcam_result(allele, mode, target, p)
+            data_list = load_target_gradcam_result(allele, mode, target, p, cp='cp')
             #p9_binder = load_target_gradcam_result(allele, mode, target, p)
 
             cp_result = {}
             result = {}
-            for dic in p9_binder:
-                for key, value in dic.items():
-                    result[key] = value
-
-            for dic in cp_value:
-                for key, value in dic.items():
+            for data in data_list:
+                for key, value in data[0].items():
+                    #for key, value in dic.items():
                     cp_result[key] = value
+
+                for key, value in data[1].items():
+                    #for key, value in dic.items():
+                    result[key] = value
 
             cp_value_id = ray.put(cp_result)
             p9_binder_id = ray.put(result)
-            allele_list = list(p9_binder.keys())
-            del p9_binder, cp_result
+            allele_list = list(result.keys())
+            del result, cp_result
 
             for i, g in tqdm(enumerate(target_list)):
                 group_list = return_group_list(group_mode, target_group_list, allele_list, allele, i)
-                print(allele, mode, g)
+                print(allele, mode, target, g, f'P{p + 1}\n')
                 results = ray.get([cal_coef_by_p_with_cp_value.remote(cp_value_id, p9_binder_id, set1, set2) for set1, set2 in group_list])
                 with open(f'/home/jaeung/Research/MHC/clustermap_correlation/short_{allele}_{mode}_{g}_{group_mode}_with_cp_value.pkl', 'wb') as f:
                     pickle.dump(results, f)
 
             del results
 
-elif mode == 'hydro' or mode == "bulky" or mode == 'polar':
+elif sys.argv[4] != "cp" and (mode == 'hydro' or mode == "bulky" or mode == 'polar'):
     for p in range(9):
         for target in range(2):
             p9_binder = load_target_gradcam_result(allele, mode, target, p)
@@ -128,18 +129,13 @@ elif mode == 'hydro' or mode == "bulky" or mode == 'polar':
         del p9_binder_id
 
 elif mode == "pattern":
-    if initial == '1':
-        p9_binder = load_target_gradcam_result(allele, mode)
-        print('importing binder data')
-        p9_binder_id = ray.put(p9_binder)
-        allele_list = list(p9_binder.keys())
-        del p9_binder
-        with open('total_binder_id.pkl', 'wb') as f:
-            pickle.dump((p9_binder_id, allele_list), f)
-    else:
-        print('Use exist data')
-        with open('total_binder_id.pkl', 'rb') as f:
-            p9_binder_id, allele_list = pickle.load(f)
+    p9_binder = load_target_gradcam_result(allele, mode)
+    print('importing binder data')
+    p9_binder_id = ray.put(p9_binder)
+    allele_list = list(p9_binder.keys())
+    del p9_binder
+    with open('total_binder_id.pkl', 'wb') as f:
+        pickle.dump((p9_binder_id, allele_list), f)
 
     for i, g in tqdm(enumerate(target_list[10:13])):
         group_list = return_group_list(group_mode, target_group_list, allele_list, allele, i)
