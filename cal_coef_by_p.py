@@ -30,22 +30,35 @@ def cal_coef_by_matrix(binder_id, binder1, binder2):
 
 
 @ray.remote
-def cal_coef_by_p_with_cp_value(cp_id, binder_id, allele1, allele2):
-    sum_cp = [cp_id[allele1][num_i] + cp_id[allele2][num_j]
-              for num_i in range(len(cp_id[allele1])) \
-              for num_j in range(len(cp_id[allele2]))]
-    mul_cp = [cp_id[allele1][num_i] * cp_id[allele2][num_j]
-              for num_i in range(len(cp_id[allele1])) \
-              for num_j in range(len(cp_id[allele2]))]
+def cal_coef_by_p_with_cp_value(binder_id, allele1, allele2):
     rvalue = [np.corrcoef(binder_id[allele1][num_i],
                           binder_id[allele2][num_j])[0, 1] \
               for num_i in range(len(binder_id[allele1])) \
               for num_j in range(len(binder_id[allele2]))]
-    sum_cp = np.array(sum_cp)
-    mul_cp = np.array(mul_cp)
     rvalue = np.array(rvalue)
 
-    return sum_cp, mul_cp, rvalue
+    return rvalue
+
+@ray.remote
+def cal_coef_by_p_with_cp_sum_value(cp_id, allele1, allele2):
+    sum_cp = [cp_id[allele1][num_i] + cp_id[allele2][num_j]
+              for num_i in range(len(cp_id[allele1])) \
+              for num_j in range(len(cp_id[allele2]))]
+
+    sum_cp = np.array(sum_cp)
+    return sum_cp
+
+
+@ray.remote
+def cal_coef_by_p_with_cp_mul_value(cp_id, allele1, allele2):
+    mul_cp = [cp_id[allele1][num_i] * cp_id[allele2][num_j]
+              for num_i in range(len(cp_id[allele1])) \
+              for num_j in range(len(cp_id[allele2]))]
+
+    mul_cp = np.array(mul_cp)
+    return mul_cp
+
+
 
 '''
     Ray를 터미널에서 실행하고 스크립트 실행할시 
@@ -74,9 +87,9 @@ if sys.argv[4] == "cp":
     for p in range(9):
         print('importing binder data')
         data_list = load_target_gradcam_result(allele, 'polar', 0, p, cp='cp')  # 어짜피 polar안에 다 있음 다른 cp들 결과
-        # p9_binder = load_target_gradcam_result(allele, mode, target, p)
         cp_result = {}
         result = {}
+
         if mode == 'hydro':
             v = 0
         elif mode == 'bulky':
@@ -98,31 +111,50 @@ if sys.argv[4] == "cp":
             for key in data[0].keys():
                 for i, value in enumerate(data[0][key]):
                     try:
+                        #print(type(value[v]))
                         cp_result[key].append(value[v])
                         key_list.append(key)
                     except:
                         print(key, i)
             for key in key_list:
                 for value in data[1][key]:
-                    result[key].append(value)
+                    result[key].append(value.astype('float16'))
 
         cp_value_id = ray.put(cp_result)
         p9_binder_id = ray.put(result)
         allele_list = list(result.keys())
-        del result, cp_result
+        del result, cp_result, data_list
 
         for i, g in tqdm(enumerate(target_list)):
             group_list = return_group_list(group_mode, target_group_list, allele_list, allele, i)
             print(allele, mode, g, f'P{p + 1}\n')
+            print('Gradcam cor')
             results = ray.get(
-                [cal_coef_by_p_with_cp_value.remote(cp_value_id, p9_binder_id, set1, set2) for set1, set2 in
+                [cal_coef_by_p_with_cp_value.remote(p9_binder_id, set1, set2) for set1, set2 in
                  group_list])
             with open(
                     f'/home/jaeung/Research/MHC/clustermap_correlation/short_{allele}_{mode}_{g}_{group_mode}_{p+1}_with_cp_value.pkl',
                     'wb') as f:
                 pickle.dump(results, f)
-
-        del results
+            del results
+            print('CP sum')
+            results = ray.get(
+                [cal_coef_by_p_with_cp_sum_value.remote(cp_value_id, set1, set2) for set1, set2 in
+                 group_list])
+            with open(
+                    f'/home/jaeung/Research/MHC/clustermap_correlation/short_{allele}_{mode}_{g}_{group_mode}_{p + 1}_with_cp_sum_value.pkl',
+                    'wb') as f:
+                pickle.dump(results, f)
+            del results
+            print('CP mul')
+            results = ray.get(
+                [cal_coef_by_p_with_cp_mul_value.remote(cp_value_id, set1, set2) for set1, set2 in
+                 group_list])
+            with open(
+                    f'/home/jaeung/Research/MHC/clustermap_correlation/short_{allele}_{mode}_{g}_{group_mode}_{p + 1}_with_cp_mul_value.pkl',
+                    'wb') as f:
+                pickle.dump(results, f)
+            del results
 
 elif sys.argv[4] != "cp" and (mode == 'hydro' or mode == "bulky" or mode == 'polar'):
     for p in range(9):
