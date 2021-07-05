@@ -15,10 +15,6 @@ def check_combi(pep, mode):
         return 1
 
 
-def find_property_value(aa):
-    return aa_property.loc[aa_property['aa'] == aa.upper()].values[0][2:5]
-
-
 @ray.remote
 def find_property(df, target_group, binder, allele, target, mode, p):
     result = {}
@@ -47,6 +43,12 @@ def check_combi(pep, mode):
         return 1
 
 
+def find_property_value(aa):
+    try:
+        return aa_property.loc[aa_property['aa'] == aa.upper()].values[0][2:5]
+    except:
+        return []
+
 @ray.remote
 def find_property2(df, target_group, binder, allele, target, mode, p):
     cp_value = {}
@@ -55,9 +57,9 @@ def find_property2(df, target_group, binder, allele, target, mode, p):
     cp_value[allele] = []
     df = df[df['allele'].isin(target_group)]  # HLA-A,B,C 각각 가져오는 부분
     for num, pepseq in enumerate(df.loc[df['allele'] == allele]['Peptide seq']):
-        if check_combi(pepseq[p], mode) == target:
-            cor_result[allele].append(binder[allele][num][:, p])
-            cp_value[allele].append(find_property_value(pepseq[p]))
+        #if check_combi(pepseq[p], mode) == target:
+        cor_result[allele].append(binder[allele][num][:, p])
+        cp_value[allele].append(find_property_value(pepseq[p]))
 
     return cp_value, cor_result
 

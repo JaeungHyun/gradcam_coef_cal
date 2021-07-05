@@ -114,7 +114,7 @@ def load_target_gradcam_result(allele, mode, target=0, position=0, cp='cp'):
             with open(f'/Users/jaeung/gradcam_coef_cal/data/{allele}_{mode}_{target}_position_{position+1}_gradcam_result.pkl', 'rb') as f:
                 return pickle.load(f)
         else:
-            if cp=='cp':
+            if cp == 'cp':
                 with open(f'/home/jaeung/Research/MHC/{allele}_{mode}_{target}_position_{position+1}_gradcam_result_with_cp_value.pkl', 'rb') as f:
                     return pickle.load(f)
             else:
