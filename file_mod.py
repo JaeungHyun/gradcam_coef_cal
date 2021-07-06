@@ -12,7 +12,7 @@ group_mode = sys.argv[3]  # ingroup or outgroup
 
 for p in range(9):
     print('importing binder data')
-    data_list = load_target_gradcam_result(allele, 'polar', 0, p, cp='cp')  # 어짜피 polar안에 다 있음 다른 cp들 결과
+    data_list = load_target_gradcam_result(allele, 'polar', 0, p, cp=None)  # 어짜피 polar안에 다 있음 다른 cp들 결과
     if mode == 'hydro':
         v = 0
     elif mode == 'bulky':
@@ -23,6 +23,7 @@ for p in range(9):
     key_list = []
     for data in data_list:
         for list_ in data:
+            #print(list_)
             key_list.extend(list(list_.keys()))
 
     #print(key_list)
@@ -42,7 +43,7 @@ for p in range(9):
                     # print(type(value[v]))
                 #print(key)
 
-                    cp_result[key].append(value[v])
+                    cp_result[key].append(value)
                 ##key_lists.append(key)
                 except:
                     print(value)

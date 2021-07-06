@@ -43,9 +43,13 @@ def check_combi(pep, mode):
         return 1
 
 
-def find_property_value(aa):
+def find_property_value(aa, mode):
+    if mode == 'polar':
+        v = 4
+    elif mode == 'bulky':
+        v = 3
     try:
-        return aa_property.loc[aa_property['aa'] == aa.upper()].values[0][2:5]
+        return aa_property.loc[aa_property['aa'] == aa.upper()].values[0][v]
     except:
         print(aa.upper())
 
@@ -59,7 +63,7 @@ def find_property2(df, target_group, binder, allele, target, mode, p):
     for num, pepseq in enumerate(df.loc[df['allele'] == allele]['Peptide seq']):
         #if check_combi(pepseq[p], mode) == target:
         cor_result[allele].append(binder[allele][num][:, p])
-        cp_value[allele].append(find_property_value(pepseq[p]))
+        cp_value[allele].append(find_property_value(pepseq[p], mode))
 
     return cp_value, cor_result
 

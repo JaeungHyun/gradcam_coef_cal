@@ -78,7 +78,7 @@ def load_short_hla():
 
 
 def load_pep_seq():
-    with open('/home/jaeung/Research/MHC/Short_HLA_seq_training_data.pkl', 'rb') as f:
+    with open('/home/jaeung/Research/MHC/Short_HLA_seq_training_data_remove_unknown_aa.pkl', 'rb') as f:
         df = pickle.load(f)
 
     del df['matrix'], df['sequence']
@@ -115,10 +115,10 @@ def load_target_gradcam_result(allele, mode, target=0, position=0, cp='cp'):
                 return pickle.load(f)
         else:
             if cp == 'cp':
-                with open(f'/home/jaeung/Research/MHC/{allele}_{mode}_{target}_position_{position+1}_gradcam_result_with_cp_value.pkl', 'rb') as f:
+                with open(f'/home/jaeung/Research/MHC/short_{allele}_{mode}_ingroup_{position+1}_with_gradcam_result.pkl', 'rb') as f:
                     return pickle.load(f)
             else:
-                with open(f'/home/jaeung/Research/MHC/{allele}_{mode}_{target}_position_{position+1}_gradcam_result.pkl', 'rb') as f:
+                with open(f'/home/jaeung/Research/MHC/{allele}_{mode}_{target}_position_{position+1}_gradcam_result_with_cp_value.pkl', 'rb') as f:
                     return pickle.load(f)
 
 

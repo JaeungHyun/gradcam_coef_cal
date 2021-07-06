@@ -84,46 +84,25 @@ except:
 target_list, target_group_list = call_group_list(allele)
 
 if sys.argv[4] == "cp":
+    if mode == 'polar':
+        v=2
+    elif mode == 'bulky':
+        v=1
     for p in range(9):
         print('importing binder data')
-        data_list = load_target_gradcam_result(allele, 'polar', 0, p, cp='cp')  # 어짜피 polar안에 다 있음 다른 cp들 결과
+        data = load_target_gradcam_result(allele, 'polar', 0, p, cp='cp')  # 어짜피 polar안에 다 있음 다른 cp들 결과
         cp_result = {}
-        result = {}
+        gradcam_result = {}
 
-        if mode == 'hydro':
-            v = 0
-        elif mode == 'bulky':
-            v = 1
-        elif mode == 'polar':
-            v = 2
-
-        key_list = []
-        for data in data_list:
-            for list_ in data:
-                key_list.extend(list(list_.keys()))
-
-        for key in key_list:
-            cp_result[key] = []
-            result[key] = []
-
-        for data in data_list:
-            key_list = []
-            for key in data[0].keys():
-                for i, value in enumerate(data[0][key]):
-                    try:
-                        #print(type(value[v]))
-                        cp_result[key].append(value[v])
-                        key_list.append(key)
-                    except:
-                        print(key, i)
-            for key in key_list:
-                for value in data[1][key]:
-                    result[key].append(value.astype('float16'))
+        for key, value in data[0].items():
+            cp_result[key] = value
+        for key, value in data[1].items():
+            gradcam_result[key] = value
 
         cp_value_id = ray.put(cp_result)
-        p9_binder_id = ray.put(result)
-        allele_list = list(result.keys())
-        del result, cp_result, data_list
+        p9_binder_id = ray.put(gradcam_result)
+        allele_list = list(gradcam_result.keys())
+        del gradcam_result, cp_result, data
 
         for i, g in tqdm(enumerate(target_list)):
             group_list = return_group_list(group_mode, target_group_list, allele_list, allele, i)
