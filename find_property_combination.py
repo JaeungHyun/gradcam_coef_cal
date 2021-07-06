@@ -47,7 +47,7 @@ def find_property_value(aa):
     try:
         return aa_property.loc[aa_property['aa'] == aa.upper()].values[0][2:5]
     except:
-        return []
+        print(aa.upper())
 
 @ray.remote
 def find_property2(df, target_group, binder, allele, target, mode, p):
