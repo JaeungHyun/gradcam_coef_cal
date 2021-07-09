@@ -48,20 +48,24 @@ def find_property_value(aa, mode):
         v = 4
     elif mode == 'bulky':
         v = 3
+    #print(v)
+    value = aa_property.loc[aa_property['aa'] == aa.upper()].values[0][v]
+    print(value)
     try:
-        return aa_property.loc[aa_property['aa'] == aa.upper()].values[0][v]
+        return value
     except:
         print(aa.upper())
 
+
 @ray.remote
-def find_property2(df, target_group, binder, allele, target, mode, p):
+def find_property2(df, target_group, binder, allele, mode, p):
     cp_value = {}
     cor_result = {}
+
     cor_result[allele] = []
     cp_value[allele] = []
     df = df[df['allele'].isin(target_group)]  # HLA-A,B,C 각각 가져오는 부분
     for num, pepseq in enumerate(df.loc[df['allele'] == allele]['Peptide seq']):
-        #if check_combi(pepseq[p], mode) == target:
         cor_result[allele].append(binder[allele][num][:, p])
         cp_value[allele].append(find_property_value(pepseq[p], mode))
 
@@ -82,7 +86,6 @@ except:
              object_store_memory=object_store_memory
              )
 
-
 p9_binder = load_gradcam_result()
 p9_binder_id = ray.put(p9_binder)
 df = load_pep_seq()
@@ -90,7 +93,6 @@ hla = load_short_hla()
 hla_id = ray.put(hla)
 df_id = ray.put(df)
 del p9_binder, df, hla
-
 
 aa_property = pd.read_excel('Amino_acid_property.xlsx')
 aa_property['hydro'] = aa_property['Hydrophobicity'].map(lambda x: 1 if x >= 0 else 0)
@@ -116,15 +118,13 @@ for allele, mode, target in list(product(*item)):
         if sys.argv[3] == '0':
             result = ray.get([find_property.remote(df_id, total_g, p9_binder_id, allele, target, mode, p)
                               for allele in total_g])
-
             print('Saving Result')
             with open(f'/home/jaeung/Research/MHC/{allele}_{mode}_{target}_position_{p+1}_gradcam_result.pkl',
                       'wb') as f:
                 pickle.dump(result, f)
         else:
-            result = ray.get([find_property2.remote(df_id, total_g, p9_binder_id, allele, target, mode, p)
+            result = ray.get([find_property2.remote(df_id, total_g, p9_binder_id, allele, mode, p)
                               for allele in total_g])
-
             print('Saving Result')
             with open(f'/home/jaeung/Research/MHC/{allele}_{mode}_{target}_position_{p+1}_gradcam_result_with_cp_value.pkl',
                       'wb') as f:
