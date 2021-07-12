@@ -90,7 +90,7 @@ if sys.argv[4] == "cp":
         v=1
     for p in range(9):
         print('importing binder data')
-        data = load_target_gradcam_result(allele, 'polar', 0, p, cp='cp')  # 어짜피 polar안에 다 있음 다른 cp들 결과
+        data = load_target_gradcam_result(allele, mode, 0, p, cp='cp')  # 어짜피
         cp_result = {}
         gradcam_result = {}
 

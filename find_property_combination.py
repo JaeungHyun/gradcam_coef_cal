@@ -48,6 +48,8 @@ def find_property_value(aa, mode):
         v = 4
     elif mode == 'bulky':
         v = 3
+    elif mode == 'hydro':
+        v = 2
     #print(v)
     value = aa_property.loc[aa_property['aa'] == aa.upper()].values[0][v]
     print(value)
