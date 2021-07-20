@@ -52,7 +52,7 @@ def find_property_value(aa, mode):
         v = 2
     #print(v)
     value = aa_property.loc[aa_property['aa'] == aa.upper()].values[0][v]
-    print(value)
+    #print(value)
     try:
         return value
     except:
