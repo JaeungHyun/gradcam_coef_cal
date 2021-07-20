@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" autoUpload="Always" serverName="jaeung@pradabear.iptime.org:17890" remoteFilesAllowedToDisappearOnAutoupload="false">
+  <component name="PublishConfigData" autoUpload="Always" remoteFilesAllowedToDisappearOnAutoupload="false">
     <serverData>
       <paths name="jaeung@163.180.14.45:7777">
         <serverdata>
           <mappings>
-            <mapping deploy="/tmp/pycharm_project_616" local="$PROJECT_DIR$" />
+            <mapping deploy="/tmp/pycharm_project_616" local="$PROJECT_DIR$" web="/" />
           </mappings>
         </serverdata>
       </paths>
@@ -20,13 +20,6 @@
         <serverdata>
           <mappings>
             <mapping deploy="/home/jaeung/gradcam_coef_cal" local="$PROJECT_DIR$" web="/" />
-          </mappings>
-        </serverdata>
-      </paths>
-      <paths name="jaeung@pradabear.iptime.org:17890">
-        <serverdata>
-          <mappings>
-            <mapping deploy="/tmp/pycharm_project_534" local="$PROJECT_DIR$" />
           </mappings>
         </serverdata>
       </paths>

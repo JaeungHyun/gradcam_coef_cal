@@ -118,7 +118,7 @@ def load_target_gradcam_result(allele, mode, target=0, position=0, cp='cp'):
                 with open(f'/home/jaeung/Research/MHC/short_{allele}_{mode}_ingroup_{position+1}_with_gradcam_result.pkl', 'rb') as f:
                     return pickle.load(f)
             else:
-                with open(f'/home/jaeung/Research/MHC/{allele}_{mode}_{target}_position_{position+1}_gradcam_result_with_cp_value.pkl', 'rb') as f:
+                with open(f'/home/jaeung/Research/MHC/{allele}_{mode}_position_{position+1}_gradcam_result_with_cp_value.pkl', 'rb') as f:
                     return pickle.load(f)
 
 

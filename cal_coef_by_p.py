@@ -94,28 +94,29 @@ if sys.argv[4] == "cp":
         cp_result = {}
         gradcam_result = {}
 
-        for key, value in data[0].items():
+        #for key, value in data[0].items():
+        for key, value in data.items():
             cp_result[key] = value
-        for key, value in data[1].items():
-            gradcam_result[key] = value
+        #for key, value in data[1].items():
+        #    gradcam_result[key] = value
 
         cp_value_id = ray.put(cp_result)
-        p9_binder_id = ray.put(gradcam_result)
+        #p9_binder_id = ray.put(gradcam_result)
         allele_list = list(gradcam_result.keys())
         del gradcam_result, cp_result, data
 
         for i, g in tqdm(enumerate(target_list)):
             group_list = return_group_list(group_mode, target_group_list, allele_list, allele, i)
             print(allele, mode, g, f'P{p + 1}\n')
-            print('Gradcam cor')
-            results = ray.get(
-                [cal_coef_by_p_with_cp_value.remote(p9_binder_id, set1, set2) for set1, set2 in
-                 group_list])
-            with open(
-                    f'/home/jaeung/Research/MHC/clustermap_correlation/short_{allele}_{mode}_{g}_{group_mode}_{p+1}_with_cp_value.pkl',
-                    'wb') as f:
-                pickle.dump(results, f)
-            del results
+            #print('Gradcam cor')
+            #results = ray.get(
+            #    [cal_coef_by_p_with_cp_value.remote(p9_binder_id, set1, set2) for set1, set2 in
+            #     group_list])
+            #with open(
+            #        f'/home/jaeung/Research/MHC/clustermap_correlation/short_{allele}_{mode}_{g}_{group_mode}_{p+1}_with_cp_value.pkl',
+            #        'wb') as f:
+            #    pickle.dump(results, f)
+            #del results
             print('CP sum')
             results = ray.get(
                 [cal_coef_by_p_with_cp_sum_value.remote(cp_value_id, set1, set2) for set1, set2 in
