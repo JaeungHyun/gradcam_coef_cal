@@ -18,8 +18,9 @@ init(extra_options="-extrachi_cutoff 12 -ex1 -ex2 -ex3 -corrections::restore_tal
 from pyrosetta.toolbox import mutate_residue
 
 
-_, template, peptide, n = argv
+#_, template, peptide, n = argv
 #template, peptide, n = 'hla_a_0201.pdb',  'SPAPPQEKL', 1
+template, peptide, n = 'hla_a_0101.pdb',  'IVTSVLLLY', 1
 
 template_model = pose_from_pdb(template)
 scorefxn = create_score_function('talaris2014')
