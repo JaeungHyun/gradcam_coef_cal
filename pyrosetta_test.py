@@ -9,12 +9,6 @@ from pyrosetta.rosetta import *
 
 init(extra_options="-extrachi_cutoff 12 -ex1 -ex2 -ex3 -corrections::restore_talaris_behavior")
 
-
-#os.environ["MKL_NUM_THREADS"] = "1"
-#os.environ["NUMEXPR_NUM_THREADS"] = "1"
-#os.environ["OMP_NUM_THREADS"] = "1"
-
-
 from pyrosetta.toolbox import mutate_residue
 
 
