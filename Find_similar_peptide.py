@@ -3,6 +3,8 @@ import pickle
 import numpy as np
 import re
 from tqdm import tqdm
+import sys
+from util import call_group_list
 
 
 def find_group(allele):
@@ -70,23 +72,15 @@ def find_group(allele):
     elif allele in group5_c:
         return 'group5'
 
+
+allele = sys.argv[1]
+
 df = pd.read_pickle('/home/jaeung/Research/MHC/Model data/2021_testset+before_dataset.pkl')
 del df['matrix']
 df['length'] = df['Peptide seq'].map(lambda x: len(x))
-df = df[df['length']==9]
-df = df[df['answer']==1]
+df = df[df['length'] == 9]
+df = df[df['answer'] == 1]
 
-group1 = ['HLA-A-2403', 'HLA-A-2402', 'HLA-A-2413', 'HLA-A-2301', 'HLA-A-2406', 'HLA-A-2407']
-group2 = ['HLA-A-3303', 'HLA-A-3301', 'HLA-A-6801', 'HLA-A-6601', 'HLA-A-3401', 'HLA-A-6602',
-          'HLA-A-3101', 'HLA-A-7401']
-group3 = ['HLA-A-3001', 'HLA-A-0301', 'HLA-A-1101', 'HLA-A-1102', 'HLA-A-6812']
-group4 = ['HLA-A-6802', 'HLA-A-6901']
-group5 = ['HLA-A-0205', 'HLA-A-0206', 'HLA-A-0217', 'HLA-A-0216', 'HLA-A-0212', 'HLA-A-0219',
-          'HLA-A-0207', 'HLA-A-0203', 'HLA-A-0201', 'HLA-A-0211', 'HLA-A-0204', 'HLA-A-0202']
-group6 = ['HLA-A-2601', 'HLA-A-2501', 'HLA-A-2608', 'HLA-A-2603', 'HLA-A-2602']
-group7 = ['HLA-A-0103', 'HLA-A-0101', 'HLA-A-2902', 'HLA-A-3002', 'HLA-A-3601', 'HLA-A-8001']
-
-group_list = [group1, group2, group3, group4, group5, group6, group7]
 
 group1_a = ['HLA-A-2403', 'HLA-A-2402', 'HLA-A-2413', 'HLA-A-2301', 'HLA-A-2406', 'HLA-A-2407']
 group2_a = ['HLA-A-3303', 'HLA-A-3301', 'HLA-A-6801', 'HLA-A-6601', 'HLA-A-3401', 'HLA-A-6602',
@@ -123,6 +117,16 @@ group5_c = ['HLA-C-1701', 'HLA-C-0801', 'HLA-C-0304', 'HLA-C-0303', 'HLA-C-1202'
             'HLA-C-0202', 'HLA-C-1203', 'HLA-C-1601', 'HLA-C-0302', ]
 
 
+if allele == 'HLA-A':
+    check_position = [8] * 7
+elif allele == 'HLA-B':
+    check_position = [1, 1, 7, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1]
+else:
+    check_position = [1, 1, 1, 1, 1]
+
+
+target_list, group_list = call_group_list(allele)
+
 for j, target in enumerate(group_list):
     df2 = df[df['allele'].isin(target)]
     pep_list = df2['Peptide seq'].unique().tolist()
@@ -133,7 +137,7 @@ for j, target in enumerate(group_list):
         tmp = ''
         for i, p in enumerate(pep1):
             # if i == 1 or i == 8:
-            if i == 8:
+            if i == check_position[j]:
                 tmp += '[A-Z]'
             else:
                 tmp += p
@@ -257,6 +261,6 @@ for j, target in enumerate(group_list):
     for tdf in result_df:
         tt.append(tdf)
     try:
-        pd.concat(tt).drop_duplicates().to_csv(f'HLA-A group{j + 1}.csv')
+        pd.concat(tt).drop_duplicates().to_csv(f'{allele} group{j + 1}.csv')
     except:
         print(target)
