@@ -61,7 +61,7 @@ def cal_coef_by_p_with_cp_mul_value(cp_id, allele1, allele2):
 
 @ray.remote
 def cal_coef_by_p_with_cp_sub_value(cp_id, allele1, allele2):
-    sub_cp = [1/(np.abs(cp_id[allele1][num_i])-1) - 1/(np.abs(cp_id[allele2][num_j])-1)
+    sub_cp = [1/(np.abs(cp_id[allele1][num_i] - cp_id[allele2][num_j])-1)
               for num_i in range(len(cp_id[allele1])) \
               for num_j in range(len(cp_id[allele2]))]
 
@@ -99,17 +99,18 @@ if sys.argv[4] == "cp":
         v=1
     for p in range(9):
         print('importing binder data')
-        data = load_target_gradcam_result(allele, mode, 0, p, cp='cp')  # 어짜피
-        cp_result = {}
-        gradcam_result = {}
+        data = load_target_gradcam_result(allele, mode, 0, p, cp='cp') # cp 데이터 불러옴
+        p9_binder = load_gradcam_result()
+        #p9_binder_id = ray.put(p9_binder)
 
+        cp_result = {}
         for key, value in data.items():
             cp_result[key] = value
 
         cp_value_id = ray.put(cp_result)
-        #p9_binder_id = ray.put(gradcam_result)
-        allele_list = list(gradcam_result.keys())
-        del gradcam_result, cp_result, data
+        allele_list = list(p9_binder.keys())
+        del p9_binder, cp_result, data
+        #del p9_binder
 
         for i, g in tqdm(enumerate(target_list)):
             group_list = return_group_list(group_mode, target_group_list, allele_list, allele, i)
@@ -123,6 +124,13 @@ if sys.argv[4] == "cp":
             #         'wb') as f:
             #     pickle.dump(results, f)
             # del results
+            # print('abs Cor coef')
+            # cor_results = ray.get([cal_coef_by_p_abs.remote(p9_binder_id, set1, set2, p) for set1, set2 in group_list])
+            # with open(
+            #         f'/home/jaeung/Research/MHC/short_{allele}_{mode}_{g}_{group_mode}_{p + 1}_with_cor_abs.pkl',
+            #         'wb') as f:
+            #     pickle.dump(cor_results, f)
+
             print('CP subs')
             results = ray.get(
                 [cal_coef_by_p_with_cp_sub_value.remote(cp_value_id, set1, set2) for set1, set2 in

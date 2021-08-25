@@ -21,9 +21,6 @@ def find_property(df, target_group, binder, allele, target, mode, p):
     result[allele] = []
     df = df[df['allele'].isin(target_group)] # HLA-A,B,C 각각 가져오는 부분
     for num, pepseq in enumerate(df.loc[df['allele'] == allele]['Peptide seq']):
-        #new_array = np.zeros((hla_len, 9))
-        #for h, i in enumerate(hla[allele]):
-        #for w, j in enumerate(pepseq):
         if check_combi(pepseq[p], mode) == target:
             result[allele].append(binder[allele][num][:, p])
             #new_array[:, w] = binder[allele][num][:, w]
