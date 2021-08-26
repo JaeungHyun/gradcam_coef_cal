@@ -51,7 +51,7 @@ def cal_coef_by_p_with_cp_sub_value(cp_id, allele1, allele2):
 
 
 '''
-    Ray를 터미널에서 실행하고 스크립트 실행할시 
+    Ray를 터미널에서 실행하고6 스크립트 실행할시 
     address='auto'로 하면 자동으로 이미 생성되어있는 곳에 들어감
     클러스터가 여러개면 ip를 지정해주어야함
 '''
