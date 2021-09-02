@@ -7,7 +7,7 @@ from util import call_group_list, find_group
 
 allele = sys.argv[1]
 
-df = pd.read_pickle('/home/jaeung/Research/MHC/Model data/2021_testset+before_dataset.pkl')
+df = pd.read_pickle('/home/jaeung/Research/MHC/DeepNeo_new_testset.pkl')
 del df['matrix']
 df['length'] = df['Peptide seq'].map(lambda x: len(x))
 df = df[df['length'] == 9]
