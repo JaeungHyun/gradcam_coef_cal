@@ -7,7 +7,7 @@ from util import call_group_list, find_group
 
 allele = sys.argv[1]
 
-df = pd.read_pickle('/home/jaeung/Research/MHC/DeepNeo_new_testset.pkl')
+df = pd.read_pickle('/home/jaeung/970evo/MHC/DeepNeo_new_testset.pkl')
 del df['matrix']
 df['length'] = df['Peptide seq'].map(lambda x: len(x))
 df = df[df['length'] == 9]
@@ -28,19 +28,22 @@ target_list, group_list = call_group_list(allele)
 
 for j, target in enumerate(tqdm(group_list)):
     try:
-        binder = pd.read_csv(f'{allele} {target_list[j]}.csv')
+        binder = pd.read_csv(f'{allele} {target_list[j]} p2,9.csv')
 
         df2 = df[df['allele'].isin(target)]
         df4 = df3[df3['allele'].isin(target)]
         #pep_list = df2['Peptide seq'].unique().tolist()
         pep_list = binder['Peptide seq'].unique().tolist()
         pep_list.sort()
+        print(pep_list
+              )
         total_df = []
         for pep1 in pep_list:
             globals()[f'{pep1}_similar'] = []
             tmp = ''
             for i, p in enumerate(pep1):
-                if i == check_position[j]:
+                # if i == check_position[j]:
+                if i == 1 or i == 8:
                     tmp += '[A-Z]'
                 else:
                     tmp += p
@@ -90,7 +93,7 @@ for j, target in enumerate(tqdm(group_list)):
         for tdf in result_df:
             total_df.append(tdf)
         try:
-            pd.concat(total_df).drop_duplicates().to_csv(f'{allele} group{j + 1} nonbinding.csv')
+            pd.concat(total_df).drop_duplicates().to_csv(f'{allele} group{j + 1} nonbinding p2,9.csv')
         except:
             pass
     except:
