@@ -23,7 +23,7 @@ else:
     check_position = [1, 1, 1, 1, 1]
 
 target_list, group_list = call_group_list(allele)
-
+44
 for j, target in enumerate(tqdm(group_list)):
     df2 = df[df['allele'].isin(target)]
     pep_list = df2['Peptide seq'].unique().tolist()

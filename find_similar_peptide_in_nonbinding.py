@@ -28,22 +28,19 @@ target_list, group_list = call_group_list(allele)
 
 for j, target in enumerate(tqdm(group_list)):
     try:
-        binder = pd.read_csv(f'{allele} {target_list[j]} p2,9.csv')
+        binder = pd.read_csv(f'{allele} {target_list[j]}.csv')
 
         df2 = df[df['allele'].isin(target)]
         df4 = df3[df3['allele'].isin(target)]
         #pep_list = df2['Peptide seq'].unique().tolist()
         pep_list = binder['Peptide seq'].unique().tolist()
         pep_list.sort()
-        print(pep_list
-              )
         total_df = []
         for pep1 in pep_list:
             globals()[f'{pep1}_similar'] = []
             tmp = ''
             for i, p in enumerate(pep1):
-                # if i == check_position[j]:
-                if i == 1 or i == 8:
+                if i == check_position[j]:
                     tmp += '[A-Z]'
                 else:
                     tmp += p
@@ -93,7 +90,7 @@ for j, target in enumerate(tqdm(group_list)):
         for tdf in result_df:
             total_df.append(tdf)
         try:
-            pd.concat(total_df).drop_duplicates().to_csv(f'{allele} group{j + 1} nonbinding p2,9.csv')
+            pd.concat(total_df).drop_duplicates().to_csv(f'{allele} group{j + 1} nonbinding.csv')
         except:
             pass
     except:

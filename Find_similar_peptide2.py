@@ -33,8 +33,7 @@ for j, target in enumerate(tqdm(group_list)):
         globals()[f'{pep1}_similar'] = []
         tmp = ''
         for i, p in enumerate(pep1):
-            #if i == check_position[j]:
-            if i == 1 or i == 8:
+            if i == check_position[j]:
                 tmp += '[A-Z]'
             else:
                 tmp += p
@@ -86,6 +85,6 @@ for j, target in enumerate(tqdm(group_list)):
     for tdf in result_df:
         total_df.append(tdf)
     try:
-        pd.concat(total_df).drop_duplicates().to_csv(f'{allele} group{j + 1} p2,9.csv')
+        pd.concat(total_df).drop_duplicates().to_csv(f'{allele} group{j + 1}.csv')
     except:
         pass
