@@ -88,15 +88,16 @@ def find_property3(df, target_group, binder, allele, mode, p):
 print(sys.argv[1])
 print(sys.argv[2])
 
-object_store_memory = int(0.6 * ray.utils.get_system_memory() // 10 ** 9 * 10 ** 9)
+#object_store_memory = int(0.6 * ray.utils.get_system_memory() // 10 ** 9 * 10 ** 9)
 try:
     ray.init(address='auto')
 except:
-    ray.init(dashboard_host='0.0.0.0',
-             log_to_driver=False,
-             _plasma_directory="/home/jaeung/tmp",
-             object_store_memory=object_store_memory
-             )
+    ray.init(_plasma_directory="/home/jaeung/tmp", object_store_memory=10 ** 9 * 10 ** 9)
+    # ray.init(dashboard_host='0.0.0.0',
+    #          log_to_driver=False,
+    #          _plasma_directory="/home/jaeung/tmp",
+    #          object_store_memory=object_store_memory
+    #          )
 
 p9_binder = load_gradcam_result()
 p9_binder_id = ray.put(p9_binder)
