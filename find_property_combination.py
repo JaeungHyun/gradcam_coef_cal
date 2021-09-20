@@ -94,7 +94,7 @@ try:
 except:
     ray.init(dashboard_host='0.0.0.0',
              log_to_driver=False,
-             _plasma_directory="/tmp",
+             _plasma_directory="/home/jaeung/tmp",
              object_store_memory=object_store_memory
              )
 
