@@ -107,9 +107,6 @@ df_id = ray.put(df)
 del p9_binder, df, hla
 
 aa_property = pd.read_excel('Amino_acid_property.xlsx')
-#aa_property['hydro'] = aa_property['Hydrophobicity'].map(lambda x: 1 if x >= 0 else 0)
-#aa_property['bulky'] = aa_property['Bulkiness'].map(lambda x: 1 if x >= np.median(aa_property['Bulkiness']) else 0)
-#aa_property['polar'] = aa_property['Polarity'].map(lambda x: 1 if x >= np.median(aa_property['Polarity']) else 0)
 
 item = [[sys.argv[1]], [sys.argv[2]]]
 
@@ -131,7 +128,7 @@ for allele, mode in list(product(*item)):
             result = ray.get([find_property.remote(df_id, total_g, p9_binder_id, allele, target, mode, p)
                               for allele in total_g])
             print('Saving Result')
-            with open(f'/home/jaeung/Research/MHC/{allele}_{mode}_position_{p+1}_gradcam_result.pkl',
+            with open(f'/home/hdd/{allele}_{mode}_position_{p+1}_gradcam_result.pkl',
                       'wb') as f:
                 pickle.dump(result, f)
         elif sys.argv[3] == 'next':
@@ -139,13 +136,13 @@ for allele, mode in list(product(*item)):
                               for allele in total_g])
             print('Saving Result')
             with open(
-                    f'/home/jaeung/Research/MHC/{allele}_{mode}_position_{p + 1}_gradcam_result_with_cp_value.pkl',
+                    f'/home/hdd/{allele}_{mode}_position_{p + 1}_gradcam_result_with_cp_value.pkl',
                     'wb') as f:
                 pickle.dump(result, f)
         else:
             result = ray.get([find_property2.remote(df_id, total_g, p9_binder_id, allele, mode, p)
                               for allele in total_g])
             print('Saving Result')
-            with open(f'/home/jaeung/Research/MHC/{allele}_{mode}_position_{p+1}_gradcam_result_with_cp_value.pkl',
+            with open(f'/home/hdd/{allele}_{mode}_position_{p+1}_gradcam_result_with_cp_value.pkl',
                       'wb') as f:
                 pickle.dump(result, f)
