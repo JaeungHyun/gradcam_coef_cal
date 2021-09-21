@@ -6,7 +6,6 @@ import pickle
 
 allele = sys.argv[1]
 mode = sys.argv[2]  #뭐였더라..
-group_mode = sys.argv[3]  # ingroup or outgroup
 
 for p in range(9):
     print('importing binder data')
@@ -50,8 +49,8 @@ for p in range(9):
             for value in data[1][key]:
                 result[key].append(value)
 
-    with open(f'/data/result/short_{allele}_{group_mode}_{p+1}_with_gradcam_by_position.pkl', 'wb') as f:
+    with open(f'/data/result/short_{allele}_{p+1}_with_gradcam_by_position.pkl', 'wb') as f:
         pickle.dump(cp_result, f)
-    with open(f'/data/result/short_{allele}_{mode}_{group_mode}_{p+1}_with_cp_value.pkl', 'wb') as f:
+    with open(f'/data/result/short_{allele}_{mode}_{p+1}_with_cp_value.pkl', 'wb') as f:
         pickle.dump(result, f)
 
