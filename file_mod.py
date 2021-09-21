@@ -7,7 +7,6 @@ import pickle
 allele = sys.argv[1]
 mode = sys.argv[2]  #뭐였더라..
 
-
 for p in range(9):
     print('importing binder data')
     data_list = load_target_gradcam_result(allele, mode, 0, p, cp=None)  # 어짜피 polar안에 다 있음 다른 cp들 결과
@@ -15,7 +14,6 @@ for p in range(9):
     key_list = []
     if mode == 'polar':
         for data in data_list:
-            #key_list.extend(list(data.keys()))
             for list_ in data:
                 key_list.extend(list(list_.keys()))
 
@@ -27,10 +25,7 @@ for p in range(9):
 
         print('cp result')
         for data in data_list:
-            #key_lists = []
             for key in data[0].keys():
-            #for key in data.keys():
-                #for i, value in enumerate(data[key]):
                 for i, value in enumerate(data[0][key]):
                     try:
                         cp_result[key].append(value)

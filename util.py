@@ -115,7 +115,7 @@ def load_target_gradcam_result(allele, mode, target=0, position=0, cp='cp'):
                 return pickle.load(f)
         else:
             if cp == 'cp':
-                with open(f'/data/result/short_{allele}_{mode}_{position+1}_with_gradcam_result.pkl', 'rb') as f:
+                with open(f'/data/result/short_{allele}_{mode}_{position + 1}_with_cp_value.pkl', 'rb') as f:
                     return pickle.load(f)
             else:
                 with open(f'/data/result/{allele}_{mode}_position_{position+1}_gradcam_result_with_cp_value.pkl', 'rb') as f:
