@@ -105,7 +105,7 @@ def load_target_gradcam_result(allele, mode, target=0, position=0, cp='cp'):
             with open('/data/result/new_short_hla_9mer_gradcam_result.pkl', 'rb') as f:
                 p9_binder, _, _, _ = pickle.load(f)
         else:
-            with open('/data/result/new_short_hla_9mer_gradcam_result.pkl', 'rb') as f:
+            with open(f'/data/result/short_{allele}_{position+1}_with_gradcam_by_position.pkl', 'rb') as f:
                 p9_binder = pickle.load(f)
         return p9_binder
 
