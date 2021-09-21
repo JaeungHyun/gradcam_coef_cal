@@ -35,7 +35,7 @@ def cal_coef_by_p_with_cp_value(binder_id, allele1, allele2):
     rvalue = [np.corrcoef(num_i, num_j)[0, 1] \
               for num_i in binder_id[allele1] \
               for num_j in binder_id[allele2]]
-    rvalue = np.array(rvalue)
+    rvalue = np.array(rvalue).astype(np.float16)
 
     return rvalue
 
