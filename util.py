@@ -95,30 +95,30 @@ def load_gradcam_result():
         with open('new_short_hla_9mer_gradcam_result.pkl', 'rb') as f:
             return pickle.load(f)
     else:
-        with open('/home/jaeung/Research/MHC/new_short_hla_9mer_gradcam_result.pkl', 'rb') as f:
+        with open('/data/result/new_short_hla_9mer_gradcam_result.pkl', 'rb') as f:
             return pickle.load(f)
 
 
 def load_target_gradcam_result(allele, mode, target=0, position=0, cp='cp'):
     if cp != 'cp' and (mode == 'total' or mode == 'pattern'):
         if platform.system() == "Darwin":
-            with open('/Users/jaeung/gradcam_coef_cal/data/new_short_hla_9mer_gradcam_result.pkl', 'rb') as f:
+            with open('/data/result/new_short_hla_9mer_gradcam_result.pkl', 'rb') as f:
                 p9_binder, _, _, _ = pickle.load(f)
         else:
-            with open('/home/jaeung/Research/MHC/new_short_hla_9mer_gradcam_result.pkl', 'rb') as f:
+            with open('/data/result/new_short_hla_9mer_gradcam_result.pkl', 'rb') as f:
                 p9_binder = pickle.load(f)
         return p9_binder
 
     else:
         if platform.system() == "Darwin":
-            with open(f'/Users/jaeung/gradcam_coef_cal/data/{allele}_{mode}_{target}_position_{position+1}_gradcam_result.pkl', 'rb') as f:
+            with open(f'/data/result/{allele}_{mode}_{target}_position_{position+1}_gradcam_result.pkl', 'rb') as f:
                 return pickle.load(f)
         else:
             if cp == 'cp':
-                with open(f'/home/jaeung/Research/MHC/training_data_gradcam_result/short_{allele}_{mode}_ingroup_{position+1}_with_gradcam_result.pkl', 'rb') as f:
+                with open(f'/data/result/short_{allele}_{mode}_ingroup_{position+1}_with_gradcam_result.pkl', 'rb') as f:
                     return pickle.load(f)
             else:
-                with open(f'/home/jaeung/Research/MHC/{allele}_{mode}_position_{position+1}_gradcam_result_with_cp_value.pkl', 'rb') as f:
+                with open(f'/data/result/{allele}_{mode}_position_{position+1}_gradcam_result_with_cp_value.pkl', 'rb') as f:
                     return pickle.load(f)
 
 

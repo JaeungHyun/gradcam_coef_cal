@@ -11,17 +11,6 @@ for p in range(9):
     print('importing binder data')
     data_list = load_target_gradcam_result(allele, mode, 0, p, cp=None)  # 어짜피 polar안에 다 있음 다른 cp들 결과
 
-    if mode == 'hydro':
-        v = 0
-    elif mode == 'bulky':
-        v = 1
-    elif mode == 'polar':
-        v = 2
-    elif mode == 'Charge':
-        v = 3
-    elif mode == 'MW':
-        v = 4
-
     key_list = []
     for data in data_list:
         #key_list.extend(list(data.keys()))
