@@ -60,8 +60,6 @@ mode = sys.argv[2]  # total, [hydro, bulky, 0,1,2,3] 나누기, 2021.05.16 현�
 group_mode = sys.argv[3]  # ingroup or outgroup
 initial = sys.argv[4]
 
-object_store_memory = int(0.6 * ray.utils.get_system_memory() // 10 ** 9 * 10 ** 9)
-
 
 try:
     ray.init(address='auto', log_to_driver=False)
@@ -69,7 +67,6 @@ except:
     ray.init(dashboard_host='0.0.0.0',
              log_to_driver=False,
              _plasma_directory="/tmp",
-             object_store_memory=object_store_memory
              )
 target_list, target_group_list = call_group_list(allele)
 
