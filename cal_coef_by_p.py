@@ -42,11 +42,11 @@ def cal_coef_by_p_with_cp_value(binder_id, allele1, allele2):
 
 @ray.remote
 def cal_coef_by_p_with_cp_sub_value(cp_id, allele1, allele2):
-    sub_cp = [1/(np.abs(cp_id[allele1][num_i] - cp_id[allele2][num_j]) + 1)
+    sub_cp = [ 1/(np.abs(cp_id[allele1][num_i] - cp_id[allele2][num_j]).astype(np.float16) + 1)
               for num_i in range(len(cp_id[allele1])) \
               for num_j in range(len(cp_id[allele2]))]
 
-    sub_cp = np.array(sub_cp)
+    sub_cp = np.array(sub_cp).astype(np.float16)
     return sub_cp
 
 
