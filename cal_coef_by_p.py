@@ -82,7 +82,7 @@ if sys.argv[4] == "cp":
         print('importing binder data')
         data = load_target_gradcam_result(allele, mode, 0, p, cp='cp') # cp 데이터 불러옴
         p9_binder = load_gradcam_result()
-        #p9_binder_id = ray.put(p9_binder)
+        p9_binder_id = ray.put(p9_binder)
 
         cp_result = {}
         for key, value in data.items():
@@ -113,7 +113,7 @@ if sys.argv[4] == "cp":
             #     pickle.dump(cor_results, f)
             print('GradCAM correlation')
             results = ray.get(
-                [cal_coef_by_p_with_cp_value.remote(cp_value_id, set1, set2) for set1, set2 in
+                [cal_coef_by_p_with_cp_value.remote(p9_binder_id, set1, set2) for set1, set2 in
                  group_list])
             with open(
                     f'/data/result/clustermap_correlation/short_{allele}_{mode}_{g}_{group_mode}_{p+1}_gradcam_cor.pkl',
