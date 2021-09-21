@@ -60,7 +60,7 @@ for p in range(9):
                         cp_result[key].append(value)
                     except:
                         print(value)
-        with open(f'/data/result/short_{allele}_{p + 1}_with_gradcam_by_position.pkl', 'wb') as f:
+        with open(f'/data/result/short_{allele}_{mode}_{p + 1}_with_cp_value.pkl', 'wb') as f:
             pickle.dump(cp_result, f)
 
 
