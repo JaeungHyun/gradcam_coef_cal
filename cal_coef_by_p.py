@@ -78,7 +78,7 @@ if sys.argv[4] == "cp":
     for p in range(9):
         print('importing binder data')
         data = load_target_gradcam_result(allele, mode, 0, p, cp='cp') # cp 데이터 불러옴
-        p9_binder = load_gradcam_result()
+        p9_binder = load_target_gradcam_result(allele, 'total', 0, p, cp='')
         p9_binder_id = ray.put(p9_binder)
 
         cp_result = {}
