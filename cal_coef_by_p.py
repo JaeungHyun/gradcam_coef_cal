@@ -32,7 +32,7 @@ def cal_coef_by_matrix(binder_id, binder1, binder2):
 
 @ray.remote
 def cal_coef_by_p_with_cp_value(binder_id, allele1, allele2):
-    rvalue = [np.corrcoef(num_i, num_j)[0, 1] \
+    rvalue = [np.corrcoef(num_i, num_j)[0, 1].astype(np.float16) \
               for num_i in binder_id[allele1] \
               for num_j in binder_id[allele2]]
     rvalue = np.array(rvalue).astype(np.float16)
