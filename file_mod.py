@@ -13,11 +13,12 @@ for p in range(9):
     data_list = load_target_gradcam_result(allele, mode, 0, p, cp=None)  # 어짜피 polar안에 다 있음 다른 cp들 결과
 
     key_list = []
-    for data in data_list:
-        #key_list.extend(list(data.keys()))
-        for list_ in data:
-            key_list.extend(list(list_.keys()))
     if mode == 'polar':
+        for data in data_list:
+            #key_list.extend(list(data.keys()))
+            for list_ in data:
+                key_list.extend(list(list_.keys()))
+
         cp_result = {}
         result = {}
         for key in key_list:
@@ -45,16 +46,16 @@ for p in range(9):
             pickle.dump(result, f)
     else:
         cp_result = {}
+        for data in data_list:
+            key_list.extend(list(data.keys()))
         for key in key_list:
             cp_result[key] = []
 
         print('cp result')
         for data in data_list:
-            # key_lists = []
-            #for key in data[0].keys():
+
             for key in data.keys():
                 for i, value in enumerate(data[key]):
-                #for i, value in enumerate(data[0][key]):
                     try:
                         cp_result[key].append(value)
                     except:
