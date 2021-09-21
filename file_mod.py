@@ -26,8 +26,8 @@ for p in range(9):
     print('cp result')
     for data in data_list:
         #key_lists = []
-        #for key in data[0].keys():
-        for key in data.keys():
+        for key in data[0].keys():
+        #for key in data.keys():
             #for i, value in enumerate(data[key]):
             for i, value in enumerate(data[0][key]):
                 try:
