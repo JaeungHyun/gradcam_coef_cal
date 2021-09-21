@@ -42,7 +42,7 @@ def cal_coef_by_p_with_cp_value(binder_id, allele1, allele2):
 
 @ray.remote
 def cal_coef_by_p_with_cp_sub_value(cp_id, allele1, allele2):
-    sub_cp = [1/(np.abs(cp_id[allele1][num_i] - cp_id[allele2][num_j])+0.1)
+    sub_cp = [1/(np.abs(cp_id[allele1][num_i] - cp_id[allele2][num_j]) + 1)
               for num_i in range(len(cp_id[allele1])) \
               for num_j in range(len(cp_id[allele2]))]
 
@@ -111,13 +111,22 @@ if sys.argv[4] == "cp":
             #         f'/home/jaeung/Research/MHC/short_{allele}_{mode}_{g}_{group_mode}_{p + 1}_with_cor_abs.pkl',
             #         'wb') as f:
             #     pickle.dump(cor_results, f)
+            print('GradCAM correlation')
+            results = ray.get(
+                [cal_coef_by_p_with_cp_value.remote(cp_value_id, set1, set2) for set1, set2 in
+                 group_list])
+            with open(
+                    f'/data/result/clustermap_correlation/short_{allele}_{mode}_{g}_{group_mode}_{p+1}_gradcam_cor.pkl',
+                    'wb') as f:
+                pickle.dump(results, f)
+            del results
 
             print('CP subs')
             results = ray.get(
                 [cal_coef_by_p_with_cp_sub_value.remote(cp_value_id, set1, set2) for set1, set2 in
                  group_list])
             with open(
-                    f'/home/jaeung/Research/MHC/clustermap_correlation/short_{allele}_{mode}_{g}_{group_mode}_{p+1}_with_cp_sub_0.1_value.pkl',
+                    f'/home/jaeung/Research/MHC/clustermap_correlation/short_{allele}_{mode}_{g}_{group_mode}_{p+1}_with_cp_sub_value.pkl',
                     'wb') as f:
                 pickle.dump(results, f)
             del results
