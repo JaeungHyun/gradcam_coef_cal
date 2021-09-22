@@ -35,7 +35,7 @@ def cal_coef_by_p_with_cp_value(binder_id, allele1, allele2):
     rvalue = [np.corrcoef(num_i, num_j)[0, 1].astype(np.float16) \
               for num_i in binder_id[allele1] \
               for num_j in binder_id[allele2]]
-    rvalue = np.array(rvalue).astype(np.float16)
+    rvalue = np.asarray(rvalue).astype(np.float16)
 
     return rvalue
 
@@ -77,15 +77,15 @@ if sys.argv[4] == "cp":
         v=1
     for p in range(9):
         print('importing binder data')
-        data = load_target_gradcam_result(allele, mode, 0, p, cp='cp') # cp 데이터 불러옴
+        #data = load_target_gradcam_result(allele, mode, 0, p, cp='cp') # cp 데이터 불러옴
         p9_binder = load_target_gradcam_result(allele, 'total', 0, p, cp='')
         p9_binder_id = ray.put(p9_binder)
 
-        cp_result = {}
-        for key, value in data.items():
-            cp_result[key] = value
+        # cp_result = {}
+        # for key, value in data.items():
+        #     cp_result[key] = value
 
-        cp_value_id = ray.put(cp_result)
+        # cp_value_id = ray.put(cp_result)
         allele_list = list(p9_binder.keys())
         del p9_binder, cp_result, data
         #del p9_binder
@@ -118,15 +118,15 @@ if sys.argv[4] == "cp":
                 pickle.dump(results, f)
             del results
 
-            print('CP subs')
-            results = ray.get(
-                [cal_coef_by_p_with_cp_sub_value.remote(cp_value_id, set1, set2) for set1, set2 in
-                 group_list])
-            with open(
-                    f'/data/result/clustermap_correlation/short_{allele}_{mode}_{g}_{group_mode}_{p+1}_with_cp_sub_value.pkl',
-                    'wb') as f:
-                pickle.dump(results, f)
-            del results
+            # print('CP subs')
+            # results = ray.get(
+            #     [cal_coef_by_p_with_cp_sub_value.remote(cp_value_id, set1, set2) for set1, set2 in
+            #      group_list])
+            # with open(
+            #         f'/data/result/clustermap_correlation/short_{allele}_{mode}_{g}_{group_mode}_{p+1}_with_cp_sub_value.pkl',
+            #         'wb') as f:
+            #     pickle.dump(results, f)
+            # del results
 
 
 elif sys.argv[4] != "cp" and (mode == 'hydro' or mode == "bulky" or mode == 'polar'):
