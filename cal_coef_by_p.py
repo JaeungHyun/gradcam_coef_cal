@@ -87,8 +87,8 @@ if sys.argv[4] == "cp":
 
         # cp_value_id = ray.put(cp_result)
         allele_list = list(p9_binder.keys())
-        del p9_binder, cp_result, data
-        #del p9_binder
+        #del p9_binder, cp_result, data
+        del p9_binder
 
         for i, g in enumerate(tqdm(target_list)):
             group_list = return_group_list(group_mode, target_group_list, allele_list, allele, i)
