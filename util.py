@@ -79,7 +79,7 @@ def load_pep_seq():
     with open('/home/jaeung/Research/MHC/IEDB_data_filtering/MS_BA_training_set.pkl', 'rb') as f:
         df = pickle.load(f)
 
-    del df['matrix'], df['sequence']
+    del df['matrix']
     gc.collect()
 
     df['length'] = df['Peptide seq'].map(lambda x: len(x))
