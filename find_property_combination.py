@@ -59,11 +59,8 @@ def find_property2(df, target_group, binder, allele, mode, p):
     cp_value[allele] = []
     df = df[df['allele'].isin(target_group)]  # HLA-A,B,C 각각 가져오는 부분
     for num, pepseq in enumerate(df.loc[df['allele'] == allele]['Peptide seq'].to_numpy()):
-        # print(p)
-        # print(num)
         cor_result[allele].append(binder[allele][num][:, p])
         cp_value[allele].append(find_property_value(pepseq[p], mode))
-
     return cp_value, cor_result
 
 
@@ -77,9 +74,7 @@ def find_property3(df, target_group, binder, allele, mode, p):
         cp_value[allele].append(find_property_value(pepseq[p], mode))
     return cp_value
 
-
 # if __name__ == "main":
-
 
 try:
     ray.init(address='auto')

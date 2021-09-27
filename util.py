@@ -97,7 +97,7 @@ def load_gradcam_result(false_Kinds):
             with open(f'/home/jaeung/960evo/2021.09.21_Training_gradcam_result.pkl', 'rb') as f:
                 return pickle.load(f)
 
-def load_target_gradcam_result(allele, mode, position=0, false_Kinds, cp='cp'):
+def load_target_gradcam_result(allele, mode, position, false_Kinds, cp='cp'):
     if cp == 'cp':
         with open(f'/data/result/short_{allele}_{mode}_{position + 1}_with_cp_value.pkl', 'rb') as f:
             return pickle.load(f)
