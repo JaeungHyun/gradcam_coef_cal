@@ -106,7 +106,7 @@ for allele, mode, false_kinds in list(product(*item)):
                 [cal_coef_by_p_with_cp_sub_value.remote(cp_value_id, set1, set2) for set1, set2 in
                  group_list])
             with open(
-                    f'/home/jaeung/960evo/clustermap_correlation/short_{allele}_{mode}_{g}_{group_mode}_{p+1}_with_cp_sub_value.pkl',
+                    f'/home/jaeung/960evo/result/clustermap_correlation/short_{allele}_{mode}_{g}_{group_mode}_{p+1}_with_cp_sub_value.pkl',
                     'wb') as f:
                 pickle.dump(results, f)
             del results
