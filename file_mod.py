@@ -36,9 +36,9 @@ for allele, mode, false_Kinds in list(product(*item)):
                     for value in data[1][key]:
                         result[key].append(value)
 
-            with open(f'/home/jaeung/960evo/result/by_position/short_{allele}_{p+1}_with_gradcam_by_position.pkl', 'wb') as f:
+            with open(f'/home/jaeung/960evo/result/by_position/short_{allele}_{p+1}_{false_Kinds}_with_gradcam_by_position.pkl', 'wb') as f:
                 pickle.dump(cp_result, f)
-            with open(f'/home/jaeung/960evo/result/by_position/short_{allele}_{mode}_{p+1}_with_cp_value.pkl', 'wb') as f:
+            with open(f'/home/jaeung/960evo/result/by_position/short_{allele}_{mode}_{p+1}_{false_Kinds}_with_cp_value.pkl', 'wb') as f:
                 pickle.dump(result, f)
         else:
             cp_result = {}
