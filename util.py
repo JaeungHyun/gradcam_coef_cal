@@ -29,7 +29,7 @@ def call_group_list(allele):
         group4 = ['HLA-B-3924','HLA-B-1402', 'HLA-B-1403', 'HLA-B-1801', 'HLA-B-4801']
         group5 = ['HLA-B-7301', 'HLA-A-3906']
         group6 = ['HLA-B-2710', 'HLA-B-2702', 'HLA-B-2701', 'HLA-B-2704', 'HLA-B-2703', 'HLA-B-2705', 'HLA-B-2708',
-                  'HLA-B-2707', 'HLA-B-2706',,'HLA-B-2709', 'HLA-B-3909']
+                  'HLA-B-2707', 'HLA-B-2706','HLA-B-2709', 'HLA-B-3909']
         group7 = ['HLA-B-5703','HLA-B-5801', 'HLA-B-5701', 'HLA-B-1517']
         group8 = ['HLA-B-5201', 'HLA-B-1302']
         group9 = ['HLA-B-0803', 'HLA-B-0802',]
@@ -93,7 +93,7 @@ def load_gradcam_result():
         with open('new_short_hla_9mer_gradcam_result.pkl', 'rb') as f:
             return pickle.load(f)
     else:
-        with open(f'/data/result/short_{allele}_{p+1}_with_gradcam_by_position.pkl', 'rb') as f:
+        with open(f'/home/jaeung/960evo/short_{allele}_{p+1}_with_gradcam_by_position.pkl', 'rb') as f:
             return pickle.load(f)
 
 
