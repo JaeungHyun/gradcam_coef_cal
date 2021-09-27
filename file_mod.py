@@ -10,7 +10,7 @@ item = [[sys.argv[1]], ['polar','hydro','bulky', 'MW', 'Charge'], ['random', 'na
 for allele, mode, false_Kinds in list(product(*item)):
     print(allele, mode, false_Kinds)
     for p in range(9):
-        print('importing binder data')
+        #print('importing binder data')
         data_list = load_target_gradcam_result(allele, mode, p, false_Kinds)
 
         key_list = []
@@ -24,7 +24,7 @@ for allele, mode, false_Kinds in list(product(*item)):
             for key in key_list:
                 cp_result[key] = []
                 result[key] = []
-            print('cp result')
+            #print('cp result')
             for data in data_list:
                 for key in data[0].keys():
                     for i, value in enumerate(data[0][key]):
@@ -47,7 +47,7 @@ for allele, mode, false_Kinds in list(product(*item)):
             for key in key_list:
                 cp_result[key] = []
 
-            print('cp result')
+            #print('cp result')
             for data in data_list:
 
                 for key in data.keys():
