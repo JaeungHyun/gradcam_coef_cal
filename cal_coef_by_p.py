@@ -56,9 +56,8 @@ def cal_coef_by_p_with_cp_sub_value(cp_id, allele1, allele2):
     클러스터가 여러개면 ip를 지정해주어야함
 '''
 allele = sys.argv[1]
-mode = sys.argv[2]  # total, [hydro, bulky, 0,1,2,3] 나누기, 2021.05.16 현재 hydro, bulky 0~3만 계산하면됨
 group_mode = sys.argv[3]  # ingroup or outgroup
-initial = sys.argv[4]
+
 
 
 try:
@@ -73,7 +72,6 @@ target_list, target_group_list = call_group_list(allele)
 item = [[sys.argv[1]], ['polar','hydro','bulky', 'MW', 'Charge'], ['random', 'natural']]
 
 for allele, mode, false_kinds in list(product(*item)):
-
     for p in range(9):
         print('importing binder data')
         data = load_gradcam_result_by_position(allele, p, false_kinds)
