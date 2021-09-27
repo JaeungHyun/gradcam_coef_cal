@@ -5,13 +5,9 @@ import pickle
 from itertools import product
 
 
-allele = sys.argv[1]
-mode = sys.argv[2]
-false_Kinds = sys.argv[3]
+item = [[sys.argv[1]], ['polar','hydro','bulky', 'MW', 'Charge'], ['random', 'natural']]
 
-item = [[sys.argv[1]], ['polar','hydro','bulky', 'MW', 'Charge']]
-
-for allele, mode in list(product(*item)):
+for allele, mode, false_Kinds in list(product(*item)):
     for p in range(9):
         print('importing binder data')
         data_list = load_target_gradcam_result(allele, mode, p, false_Kinds)
