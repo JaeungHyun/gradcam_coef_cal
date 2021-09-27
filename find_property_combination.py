@@ -119,7 +119,7 @@ for allele, mode in list(product(*item)):
             result = ray.get([find_property.remote(df_id, total_g, p9_binder_id, allele, mode, p)
                               for allele in total_g])
             print('Saving Result')
-            with open(f'/data/result/{allele}_position_{p + 1}_gradcam_result.pkl',
+            with open(f'/home/jaeung/960evo/result/{allele}_natural_protein_position_{p + 1}_gradcam_result.pkl',
                       'wb') as f:
                 pickle.dump(result, f)
 
@@ -128,7 +128,7 @@ for allele, mode in list(product(*item)):
                               for allele in total_g])
             print('Saving Result')
             with open(
-                    f'/data/result/{allele}_{mode}_position_{p + 1}_gradcam_result_with_cp_value.pkl',
+                    f'/home/jaeung/960evo/result/{allele}_natural_protein_{mode}_position_{p + 1}_gradcam_result_with_cp_value.pkl',
                     'wb') as f:
                 pickle.dump(result, f)
 
@@ -136,7 +136,7 @@ for allele, mode in list(product(*item)):
             result = ray.get([find_property2.remote(df_id, total_g, p9_binder_id, allele, mode, p)
                               for allele in total_g])
             print('Saving Result')
-            with open(f'/data/result/{allele}_{mode}_position_{p + 1}_gradcam_result_with_cp_value.pkl',
+            with open(f'/home/jaeung/960evo/result/{allele}_{mode}_position_{p + 1}_gradcam_result_with_cp_value.pkl',
                       'wb') as f:
                 pickle.dump(result, f)
 

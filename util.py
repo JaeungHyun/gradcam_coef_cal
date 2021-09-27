@@ -76,7 +76,7 @@ def load_short_hla():
 
 
 def load_pep_seq():
-    with open('/home/jaeung/Research/MHC/Short_HLA_seq_training_data_remove_unknown_aa.pkl', 'rb') as f:
+    with open('/home/jaeung/Research/MHC/IEDB_data_filtering/MS_BA_training_set.pkl', 'rb') as f:
         df = pickle.load(f)
 
     del df['matrix'], df['sequence']
