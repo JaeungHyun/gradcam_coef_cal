@@ -99,7 +99,7 @@ def load_gradcam_result(false_Kinds):
 
 
 def load_target_gradcam_result(allele, position, false_kinds):
-    with open(f'/home/jaeung/960evo/result/short_{allele}_{position+1}_{false_kinds}_with_gradcam_by_position.pkl', 'rb') as f:
+    with open(f'/home/jaeung/960evo/result/by_position/short_{allele}_{position+1}_{false_kinds}_with_gradcam_by_position.pkl', 'rb') as f:
         return pickle.load(f)
 
 
