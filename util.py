@@ -93,7 +93,7 @@ def load_gradcam_result():
         with open('new_short_hla_9mer_gradcam_result.pkl', 'rb') as f:
             return pickle.load(f)
     else:
-        with open(f'/home/jaeung/960evo/short_{allele}_{p+1}_with_gradcam_by_position.pkl', 'rb') as f:
+        with open(f'/home/jaeung/960evo/2021.09.21_Training_natural_protein_gradcam_result.pkl', 'rb') as f:
             return pickle.load(f)
 
 
