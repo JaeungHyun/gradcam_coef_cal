@@ -85,14 +85,17 @@ def load_pep_seq():
     return df
 
 
-def load_gradcam_result():
+def load_gradcam_result(false_Kinds):
     if platform.system() == "Darwin":
         with open('new_short_hla_9mer_gradcam_result.pkl', 'rb') as f:
             return pickle.load(f)
     else:
-        with open(f'/home/jaeung/960evo/2021.09.21_Training_natural_protein_gradcam_result.pkl', 'rb') as f:
-            return pickle.load(f)
-
+        if false_Kinds == 'natural':
+            with open(f'/home/jaeung/960evo/2021.09.21_Training_natural_protein_gradcam_result.pkl', 'rb') as f:
+                return pickle.load(f)
+        else:
+            with open(f'/home/jaeung/960evo/2021.09.21_Training_gradcam_result.pkl', 'rb') as f:
+                return pickle.load(f)
 
 def load_target_gradcam_result(allele, mode, target=0, position=0, cp='cp'):
     if cp != 'cp' and (mode == 'total' or mode == 'pattern'):
