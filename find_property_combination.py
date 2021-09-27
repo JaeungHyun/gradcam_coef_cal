@@ -91,9 +91,9 @@ except:
              _plasma_directory="/home/jaeung/tmp"
              )
 
-p9_binder = load_gradcam_result()
+p9_binder = load_gradcam_result(sys.argv[4])
 p9_binder_id = ray.put(p9_binder)
-df = load_pep_seq(sys.argv[4])
+df = load_pep_seq()
 hla = load_short_hla()
 hla_id = ray.put(hla)
 df_id = ray.put(df)
