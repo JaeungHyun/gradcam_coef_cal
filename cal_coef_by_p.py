@@ -76,7 +76,7 @@ for allele, mode, false_kinds in list(product(*item)):
         print('importing binder data')
         data = load_gradcam_result_by_position(allele, p, false_kinds)
         p9_binder = load_target_gradcam_result(allele, mode, p, false_kinds)
-        p9_binder = np.asarray(p9_binder).astype(np.float16)
+        #p9_binder = np.asarray(p9_binder).astype(np.float16)
         p9_binder_id = ray.put(p9_binder)
 
         cp_result = {}
@@ -90,13 +90,13 @@ for allele, mode, false_kinds in list(product(*item)):
 
         for i, g in enumerate(tqdm(target_list)):
             group_list = return_group_list(group_mode, target_group_list, allele_list, allele, i)
-            print(allele, mode, g, f'P{p + 1}\n')
+            print(allele, mode, g, f'P{p+1}\n')
             print('GradCAM correlation')
             results = ray.get(
                 [cal_coef_by_p_with_cp_value.remote(p9_binder_id, set1, set2) for set1, set2 in
                  group_list])
             with open(
-                    f'/data/result/clustermap_correlation/short_{allele}_{mode}_{g}_{group_mode}_{p+1}_gradcam_cor.pkl',
+                    f'/home/jaeung/960evo/result/clustermap_correlation/short_{allele}_{mode}_{g}_{group_mode}_{p+1}_gradcam_cor.pkl',
                     'wb') as f:
                 pickle.dump(results, f)
             del results
@@ -106,7 +106,7 @@ for allele, mode, false_kinds in list(product(*item)):
                 [cal_coef_by_p_with_cp_sub_value.remote(cp_value_id, set1, set2) for set1, set2 in
                  group_list])
             with open(
-                    f'/data/result/clustermap_correlation/short_{allele}_{mode}_{g}_{group_mode}_{p+1}_with_cp_sub_value.pkl',
+                    f'/home/jaeung/960evo/clustermap_correlation/short_{allele}_{mode}_{g}_{group_mode}_{p+1}_with_cp_sub_value.pkl',
                     'wb') as f:
                 pickle.dump(results, f)
             del results

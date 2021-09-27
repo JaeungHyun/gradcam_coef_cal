@@ -7,11 +7,11 @@ from itertools import product
 
 item = [[sys.argv[1]], ['polar','hydro','bulky', 'MW', 'Charge'], ['random', 'natural']]
 
-for allele, mode, false_Kinds in list(product(*item)):
-    print(allele, mode, false_Kinds)
+for allele, mode, false_kinds in list(product(*item)):
+    print(allele, mode, false_kinds)
     for p in range(9):
         #print('importing binder data')
-        data_list = load_target_gradcam_result(allele, mode, p, false_Kinds)
+        data_list = load_target_gradcam_result(allele, mode, p, false_kinds)
 
         key_list = []
         if mode == 'polar':
@@ -36,9 +36,9 @@ for allele, mode, false_Kinds in list(product(*item)):
                     for value in data[1][key]:
                         result[key].append(value)
 
-            with open(f'/home/jaeung/960evo/result/by_position/short_{allele}_{p+1}_{false_Kinds}_with_gradcam_by_position.pkl', 'wb') as f:
+            with open(f'/home/jaeung/960evo/result/by_position/short_{allele}_{p+1}_{false_kinds}_with_gradcam_by_position.pkl', 'wb') as f:
                 pickle.dump(cp_result, f)
-            with open(f'/home/jaeung/960evo/result/by_position/short_{allele}_{mode}_{p+1}_{false_Kinds}_with_cp_value.pkl', 'wb') as f:
+            with open(f'/home/jaeung/960evo/result/by_position/short_{allele}_{mode}_{p+1}_{false_kinds}_with_cp_value.pkl', 'wb') as f:
                 pickle.dump(result, f)
         else:
             cp_result = {}
@@ -56,7 +56,7 @@ for allele, mode, false_Kinds in list(product(*item)):
                             cp_result[key].append(value)
                         except:
                             print(value)
-            with open(f'/home/jaeung/960evo/result/by_position/short_{allele}_{mode}_{p + 1}_with_cp_value.pkl', 'wb') as f:
+            with open(f'/home/jaeung/960evo/result/by_position/short_{allele}_{mode}_{p+1}_{false_kinds}_with_cp_value.pkl', 'wb') as f:
                 pickle.dump(cp_result, f)
 
 
