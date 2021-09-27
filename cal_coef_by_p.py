@@ -56,7 +56,7 @@ def cal_coef_by_p_with_cp_sub_value(cp_id, allele1, allele2):
     클러스터가 여러개면 ip를 지정해주어야함
 '''
 allele = sys.argv[1]
-group_mode = sys.argv[3]  # ingroup or outgroup
+group_mode = sys.argv[2]  # ingroup or outgroup
 
 
 
