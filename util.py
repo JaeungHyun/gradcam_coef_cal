@@ -81,6 +81,7 @@ def load_pep_seq():
     del df['matrix']
     df = df[df['length'] == 9]
     df = df[df['answer'] == 1]
+    df = df[~df['Peptide seq'].str.contains('X')]
     return df
 
 
