@@ -89,7 +89,7 @@ except:
              _plasma_directory="/home/jaeung/tmp"
              )
 
-p9_binder = load_gradcam_result(sys.argv[4])
+p9_binder = load_gradcam_result(sys.argv[2])
 p9_binder_id = ray.put(p9_binder)
 df = load_pep_seq()
 hla = load_short_hla()
@@ -123,7 +123,7 @@ for allele, mode in list(product(*item)):
                     f'/home/jaeung/960evo/result/{allele}_random_protein_{mode}_position_{p + 1}_gradcam_result_with_cp_value.pkl',
                     'wb') as f:
                 pickle.dump(result, f)
-        elif sys.argv[4] == 'natural':
+        elif sys.argv[2] == 'natural':
             result = ray.get([find_property3.remote(df_id, total_g, p9_binder_id, allele, mode, p)
                               for allele in total_g])
             print('Saving Result')
