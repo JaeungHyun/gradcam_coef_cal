@@ -75,7 +75,7 @@ for allele, mode, false_kinds in list(product(*item)):
     for p in range(9):
         print('importing binder data')
         data = load_gradcam_result_by_position(allele, p, false_kinds)
-        p9_binder = load_target_gradcam_result(allele, mode, p, false_kinds)
+        p9_binder = load_target_gradcam_result(allele, p, false_kinds)
         #p9_binder = np.asarray(p9_binder).astype(np.float16)
         p9_binder_id = ray.put(p9_binder)
 
