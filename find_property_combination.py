@@ -79,9 +79,7 @@ def find_property3(df, target_group, binder, allele, mode, p):
 
 
 # if __name__ == "main":
-print(sys.argv[1]) # allele
-print(sys.argv[2]) # mode
-print(sys.argv[4]) # false peptide 종류
+
 
 try:
     ray.init(address='auto')
@@ -101,7 +99,7 @@ del p9_binder, df, hla
 
 aa_property = pd.read_excel('Amino_acid_property.xlsx')
 
-item = [[sys.argv[1]], [sys.argv[2]]]
+item = [[sys.argv[1]], ['polar','hydro','bulky', 'MW', 'Charge']]
 
 for allele, mode in list(product(*item)):
     print(allele, mode)
@@ -117,37 +115,21 @@ for allele, mode in list(product(*item)):
     for g in group_list:
         total_g.extend(g)
     for p in range(9):
-        if sys.argv[3] == '0':
-            result = ray.get([find_property.remote(df_id, total_g, p9_binder_id, allele, mode, p)
+        if sys.argv[2] == 'random':
+            result = ray.get([find_property3.remote(df_id, total_g, p9_binder_id, allele, mode, p)
                               for allele in total_g])
             print('Saving Result')
-            with open(f'/home/jaeung/960evo/result/{allele}_natural_protein_position_{p + 1}_gradcam_result.pkl',
-                      'wb') as f:
+            with open(
+                    f'/home/jaeung/960evo/result/{allele}_random_protein_{mode}_position_{p + 1}_gradcam_result_with_cp_value.pkl',
+                    'wb') as f:
                 pickle.dump(result, f)
-
-        elif sys.argv[3] == 'next':
-            if sys.argv[4] == 'random':
-                result = ray.get([find_property3.remote(df_id, total_g, p9_binder_id, allele, mode, p)
-                                  for allele in total_g])
-                print('Saving Result')
-                with open(
-                        f'/home/jaeung/960evo/result/{allele}_random_protein_{mode}_position_{p + 1}_gradcam_result_with_cp_value.pkl',
-                        'wb') as f:
-                    pickle.dump(result, f)
-            elif sys.argv[4] == 'natural':
-                result = ray.get([find_property3.remote(df_id, total_g, p9_binder_id, allele, mode, p)
-                                  for allele in total_g])
-                print('Saving Result')
-                with open(
-                        f'/home/jaeung/960evo/result/{allele}_natural_protein_{mode}_position_{p + 1}_gradcam_result_with_cp_value.pkl',
-                        'wb') as f:
-                    pickle.dump(result, f)
-
-        else:
-            result = ray.get([find_property2.remote(df_id, total_g, p9_binder_id, allele, mode, p)
+        elif sys.argv[4] == 'natural':
+            result = ray.get([find_property3.remote(df_id, total_g, p9_binder_id, allele, mode, p)
                               for allele in total_g])
             print('Saving Result')
-            with open(f'/home/jaeung/960evo/result/{allele}_{mode}_position_{p + 1}_gradcam_result_with_cp_value.pkl',
-                      'wb') as f:
+            with open(
+                    f'/home/jaeung/960evo/result/{allele}_natural_protein_{mode}_position_{p + 1}_gradcam_result_with_cp_value.pkl',
+                    'wb') as f:
                 pickle.dump(result, f)
+
 
