@@ -8,6 +8,7 @@ from itertools import product
 item = [[sys.argv[1]], ['polar','hydro','bulky', 'MW', 'Charge'], ['random', 'natural']]
 
 for allele, mode, false_Kinds in list(product(*item)):
+    print(allele, mode, false_Kinds)
     for p in range(9):
         print('importing binder data')
         data_list = load_target_gradcam_result(allele, mode, p, false_Kinds)
