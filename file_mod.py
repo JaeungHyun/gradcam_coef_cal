@@ -56,7 +56,7 @@ for allele, mode, false_Kinds in list(product(*item)):
                             cp_result[key].append(value)
                         except:
                             print(value)
-            with open(f'/home/jaeung/960evo/result/short_{allele}_{mode}_{p + 1}_with_cp_value.pkl', 'wb') as f:
+            with open(f'/home/jaeung/960evo/result/by_position/short_{allele}_{mode}_{p + 1}_with_cp_value.pkl', 'wb') as f:
                 pickle.dump(cp_result, f)
 
 
