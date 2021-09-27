@@ -5,7 +5,7 @@ import pickle
 
 
 allele = sys.argv[1]
-mode = sys.argv[2]  #뭐였더라..
+mode = sys.argv[2]
 
 for p in range(9):
     print('importing binder data')

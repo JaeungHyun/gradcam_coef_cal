@@ -115,21 +115,39 @@ for allele, mode in list(product(*item)):
     for g in group_list:
         total_g.extend(g)
     for p in range(9):
-        if sys.argv[2] == 'random':
-            result = ray.get([find_property3.remote(df_id, total_g, p9_binder_id, allele, mode, p)
-                              for allele in total_g])
-            print('Saving Result')
-            with open(
-                    f'/home/jaeung/960evo/result/{allele}_random_protein_{mode}_position_{p + 1}_gradcam_result_with_cp_value.pkl',
-                    'wb') as f:
-                pickle.dump(result, f)
-        elif sys.argv[2] == 'natural':
-            result = ray.get([find_property3.remote(df_id, total_g, p9_binder_id, allele, mode, p)
-                              for allele in total_g])
-            print('Saving Result')
-            with open(
-                    f'/home/jaeung/960evo/result/{allele}_natural_protein_{mode}_position_{p + 1}_gradcam_result_with_cp_value.pkl',
-                    'wb') as f:
-                pickle.dump(result, f)
+        if mode == 'polar':
+            if sys.argv[2] == 'random':
+                result = ray.get([find_property2.remote(df_id, total_g, p9_binder_id, allele, mode, p)
+                                  for allele in total_g])
+                print('Saving Result')
+                with open(
+                        f'/home/jaeung/960evo/result/{allele}_random_protein_{mode}_position_{p + 1}_gradcam_result_with_cp_value.pkl',
+                        'wb') as f:
+                    pickle.dump(result, f)
+            elif sys.argv[2] == 'natural':
+                result = ray.get([find_property2.remote(df_id, total_g, p9_binder_id, allele, mode, p)
+                                  for allele in total_g])
+                print('Saving Result')
+                with open(
+                        f'/home/jaeung/960evo/result/{allele}_natural_protein_{mode}_position_{p + 1}_gradcam_result_with_cp_value.pkl',
+                        'wb') as f:
+                    pickle.dump(result, f)
+        else:
+            if sys.argv[2] == 'random':
+                result = ray.get([find_property3.remote(df_id, total_g, p9_binder_id, allele, mode, p)
+                                  for allele in total_g])
+                print('Saving Result')
+                with open(
+                        f'/home/jaeung/960evo/result/{allele}_random_protein_{mode}_position_{p + 1}_gradcam_result_with_cp_value.pkl',
+                        'wb') as f:
+                    pickle.dump(result, f)
+            elif sys.argv[2] == 'natural':
+                result = ray.get([find_property3.remote(df_id, total_g, p9_binder_id, allele, mode, p)
+                                  for allele in total_g])
+                print('Saving Result')
+                with open(
+                        f'/home/jaeung/960evo/result/{allele}_natural_protein_{mode}_position_{p + 1}_gradcam_result_with_cp_value.pkl',
+                        'wb') as f:
+                    pickle.dump(result, f)
 
 

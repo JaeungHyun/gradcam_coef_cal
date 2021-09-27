@@ -97,27 +97,13 @@ def load_gradcam_result(false_Kinds):
             with open(f'/home/jaeung/960evo/2021.09.21_Training_gradcam_result.pkl', 'rb') as f:
                 return pickle.load(f)
 
-def load_target_gradcam_result(allele, mode, target=0, position=0, cp='cp'):
-    if cp != 'cp' and (mode == 'total' or mode == 'pattern'):
-        if platform.system() == "Darwin":
-            with open('/data/result/new_short_hla_9mer_gradcam_result.pkl', 'rb') as f:
-                p9_binder, _, _, _ = pickle.load(f)
-        else:
-            with open(f'/data/result/short_{allele}_{position+1}_with_gradcam_by_position.pkl', 'rb') as f:
-                p9_binder = pickle.load(f)
-        return p9_binder
-
+def load_target_gradcam_result(allele, mode, position=0, false_Kinds, cp='cp'):
+    if cp == 'cp':
+        with open(f'/data/result/short_{allele}_{mode}_{position + 1}_with_cp_value.pkl', 'rb') as f:
+            return pickle.load(f)
     else:
-        if platform.system() == "Darwin":
-            with open(f'/data/result/{allele}_{mode}_{target}_position_{position+1}_gradcam_result.pkl', 'rb') as f:
-                return pickle.load(f)
-        else:
-            if cp == 'cp':
-                with open(f'/data/result/short_{allele}_{mode}_{position + 1}_with_cp_value.pkl', 'rb') as f:
-                    return pickle.load(f)
-            else:
-                with open(f'/data/result/{allele}_{mode}_position_{position+1}_gradcam_result_with_cp_value.pkl', 'rb') as f:
-                    return pickle.load(f)
+        with open(f'/data/result/{allele}_{mode}_position_{position+1}_gradcam_result_with_cp_value.pkl', 'rb') as f:
+            return pickle.load(f)
 
 
 def return_group_list(group_mode, target_group_list, allele_list, allele, i):
