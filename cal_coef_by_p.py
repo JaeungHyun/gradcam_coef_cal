@@ -8,13 +8,13 @@ import pickle
 
 @ray.remote
 def cal_coef_by_p(binder_id, binder1, binder2):
-    rvalue = [np.corrcoef(binder_id[binder1][num_i].reshape(-1),
-                          binder_id[binder2][num_j].reshape(-1))[0, 1]\
-              for num_i in range(len(binder_id[binder1]))\
-              for num_j in range(len(binder_id[binder2]))]
+    rvalue = [np.corrcoef(array1.reshape(-1),
+                          array2.reshape(-1))[0, 1]\
+              for array1 in binder_id[binder1]\
+              for array2 in binder_id[binder2]]
     
     rvalue = np.array(rvalue)
-    rvalue = rvalue[~np.isnan(rvalue)]
+    #rvalue = rvalue[~np.isnan(rvalue)]
     return rvalue
 
 
