@@ -21,7 +21,7 @@ def call_group_list(allele):
         group_list = [group1, group2, group3, group4, group5, group6]
 
     elif allele == 'HLA-B':
-        group1 = ['HLA-B-1803', 'HLA-A-4427','HLA-B-4428', 'HLA-A-1801','HLA-B-4403', 'HLA-B-4402','HLA-B-4901',
+        group1 = ['HLA-B-1803', 'HLA-B-4427','HLA-B-4428', 'HLA-A-1801','HLA-B-4403', 'HLA-B-4402','HLA-B-4901',
                   'HLA-B-4501', 'HLA-B-4101','HLA-B-5001', 'HLA-B-4006']
         group2 = ['HLA-B-4102', 'HLA-B-4104', 'HLA-B-4103','HLA-B-4409', 'HLA-B-4001','HLA-B-4002']
 

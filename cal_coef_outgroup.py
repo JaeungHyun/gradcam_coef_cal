@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 from tqdm import tqdm
 import ray
 import sys
@@ -20,11 +21,7 @@ def cal_coef_by_matrix(binder_id, binder1, binder2):
 
 allele = sys.argv[1]
 group_mode = sys.argv[2]  # ingroup or outgroup
-p9_binder = load_gradcam_result(sys.argv[2])
-p9_binder_id = ray.put(p9_binder)
-allele_list = list(p9_binder.keys())
 
-del p9_binder
 
 try:
     ray.init(address='auto', log_to_driver=False)
@@ -37,9 +34,18 @@ except:
 
 target_list, target_group_list = call_group_list(allele)
 
-item = [[sys.argv[1]], ['ingroup','outgroup'],['polar','hydro','bulky', 'MW', 'Charge'], ['random', 'natural']]
+item = [[sys.argv[1]], ['ingroup', 'outgroup'],
+        ['polar', 'hydro', 'bulky', 'MW', 'Charge'],
+        ['random', 'natural']]
 
 for allele, group_mode,  mode, false_kinds in list(product(*item)):
+    p9_binder = load_gradcam_result(false_kinds)
+    p9_binder_id = ray.put(p9_binder)
+    allele_list = pd.Series(p9_binder.keys())
+    allele_list = allele_list[allele_list.str.contains(allele)]
+
+    del p9_binder
+
     target_list, group_list = call_group_list(allele)
     total_g = []
     for g in group_list:
@@ -53,7 +59,7 @@ for allele, group_mode,  mode, false_kinds in list(product(*item)):
                  group_list])
 
             np.save(f'/home/hdd/result/clustermap_correlation/{allele}_{mode}_{g}_{group_mode}_gradcam_cor.pkl',
-                    results,  allow_pickle=True)
+                    results, allow_pickle=True)
     else:
         print('Calculating outgroup')
         for i, g in enumerate(tqdm(target_list)):
