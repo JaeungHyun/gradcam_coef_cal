@@ -57,7 +57,7 @@ for allele, group_mode, false_kinds in list(product(*item)):
                 [cal_coef_by_matrix.remote(p9_binder_id, set1, set2) for set1, set2 in
                  group_list])
 
-            np.save(f'/home/hdd/result/clustermap_correlation/{allele}_{mode}_{g}_{group_mode}_gradcam_cor.pkl',
+            np.save(f'/home/hdd/result/clustermap_correlation/{allele}_{g}_{group_mode}_gradcam_cor.pkl',
                     results, allow_pickle=True)
     else:
         print('Calculating outgroup')
@@ -68,5 +68,5 @@ for allele, group_mode, false_kinds in list(product(*item)):
                  group_list])
 
             np.save(
-                f'/home/hdd/result/clustermap_correlation/{allele}_{mode}_{g}_{group_mode}_gradcam_cor.pkl',
+                f'/home/hdd/result/clustermap_correlation/{allele}_{g}_{group_mode}_gradcam_cor.pkl',
                 results, allow_pickle=True)
