@@ -35,10 +35,9 @@ except:
 target_list, target_group_list = call_group_list(allele)
 
 item = [[sys.argv[1]], ['ingroup', 'outgroup'],
-        ['polar', 'hydro', 'bulky', 'MW', 'Charge'],
         ['random', 'natural']]
 
-for allele, group_mode,  mode, false_kinds in list(product(*item)):
+for allele, group_mode, false_kinds in list(product(*item)):
     p9_binder = load_gradcam_result(false_kinds)
     p9_binder_id = ray.put(p9_binder)
     allele_list = pd.Series(p9_binder.keys())
